@@ -1,174 +1,16 @@
-import { FallingLines, ThreeCircles } from "react-loader-spinner";
-import { FaGithub, FaFacebook, FaLinkedinIn } from "react-icons/fa";
+import { ThreeCircles } from "react-loader-spinner";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  getCachedData,
+  setCachedData,
+  formatTime,
+  getCurrentTime,
+  getNextPrayerTime,
+} from "../src/utils/helpers";
 import "./App.css";
-
-// Cache management
-const CACHE_KEY = "prayerTimesCache";
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
-const getCachedData = () => {
-  try {
-    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
-    const now = Date.now();
-
-    if (cached.timestamp && now - cached.timestamp < CACHE_DURATION) {
-      return cached.data;
-    }
-  } catch (error) {
-    console.warn("Error reading cache:", error);
-  }
-  return null;
-};
-
-const setCachedData = (data) => {
-  try {
-    const cacheData = {
-      data,
-      timestamp: Date.now(),
-    };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-  } catch (error) {
-    console.warn("Error setting cache:", error);
-  }
-};
-
-const convertTo12Hour = (time) => {
-  if (!time) return "";
-  const [hours, minutes] = time.split(":").map(Number);
-  const ampm = hours >= 12 ? "pm" : "am";
-  const displayHours = hours % 12 || 12;
-  return `${displayHours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
-};
-
-const formatTime = (duration) => {
-  if (!duration) return null;
-
-  const totalSeconds = Math.floor(duration / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  if (hours > 0) {
-    return ` in ${hours} hour${hours !== 1 ? "s" : ""}, ${minutes} minute${
-      minutes !== 1 ? "s" : ""
-    }`;
-  }
-  return ` in ${minutes} minute${minutes !== 1 ? "s" : ""} ${seconds} second${
-    seconds !== 1 ? "s" : ""
-  }`;
-};
-
-const getCurrentTime = () => new Date();
-
-const parseTime = (timeString) => {
-  const [hours, minutes] = timeString.split(":").map(Number);
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  return date;
-};
-
-const getNextPrayerTime = (currentTime, prayerTimes) => {
-  if (!prayerTimes) return { nextPrayerTime: null, prayerName: null };
-
-  const prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
-  const today = new Date(currentTime);
-
-  for (const prayer of prayerOrder) {
-    if (prayerTimes[prayer]) {
-      const prayerTime = parseTime(prayerTimes[prayer]);
-      if (currentTime < prayerTime) {
-        return { nextPrayerTime: prayerTime, prayerName: prayer };
-      }
-    }
-  }
-
-  // Next prayer is Fajr tomorrow
-  const tomorrowFajr = parseTime(prayerTimes.Fajr);
-  tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
-  return { nextPrayerTime: tomorrowFajr, prayerName: "Fajr" };
-};
-
-// Components
-const PrayerList = ({ prayerTimes }) => {
-  const prayerData = useMemo(() => {
-    if (!prayerTimes) return [];
-
-    return [
-      { name: "Fajr", start: prayerTimes.Fajr, end: prayerTimes.Sunrise },
-      { name: "Dhuhr", start: prayerTimes.Dhuhr, end: prayerTimes.Asr },
-      { name: "Asr", start: prayerTimes.Asr, end: prayerTimes.Maghrib },
-      { name: "Maghrib", start: prayerTimes.Maghrib, end: prayerTimes.Isha },
-      { name: "Isha", start: prayerTimes.Isha, end: prayerTimes.Fajr },
-    ].map((prayer) => ({
-      ...prayer,
-      startFormatted: convertTo12Hour(prayer.start),
-      endFormatted: convertTo12Hour(prayer.end),
-    }));
-  }, [prayerTimes]);
-
-  return (
-    <div>
-      <h3>Today's Prayer Times</h3>
-      {prayerData.map((prayer) => (
-        <p key={prayer.name}>
-          <span className="prayer">{prayer.name}:</span> {prayer.startFormatted}{" "}
-          - {prayer.endFormatted}
-        </p>
-      ))}
-    </div>
-  );
-};
-
-const Footer = () => {
-  return (
-    <div className="footer">
-      <a
-        href="https://github.com/HasanC14/Islamic-Prayer-Time"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <FaGithub />
-      </a>
-      <a
-        href="https://www.facebook.com/hasan.chowdhuryD/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <FaFacebook />
-      </a>
-      <a
-        href="https://www.linkedin.com/in/hasanchowdhuryd/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <FaLinkedinIn />
-      </a>
-    </div>
-  );
-};
-
-const NextPrayerTime = ({ nextPrayer }) => {
-  if (!nextPrayer) {
-    return (
-      <FallingLines
-        color="rgb(199, 195, 195)"
-        width="100"
-        visible={true}
-        ariaLabel="falling-lines-loading"
-      />
-    );
-  }
-
-  const hours = nextPrayer.getHours();
-  const minutes = nextPrayer.getMinutes();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  const displayHours = hours % 12 || 12;
-  const displayMinutes = minutes.toString().padStart(2, "0");
-
-  return `${displayHours}:${displayMinutes} ${ampm}`;
-};
+import Footer from "./components/Footer";
+import PrayerList from "./components/PrayerList";
 
 // Main App Component
 function App() {
@@ -176,13 +18,183 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [prayerTimes, setPrayerTimes] = useState(null);
   const [prayerName, setPrayerName] = useState(null);
-  const [nextPrayer, setNextPrayer] = useState(null);
   const [hijriDate, setHijriDate] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [location, setLocation] = useState({
+    city: "",
+    country: "",
+    lat: null,
+    lng: null,
+  });
+
+  const timestamp = Math.floor(Date.now() / 1000);
+
+  // Simplified getUserLocation function with direct messaging
+  const getUserLocation = useCallback(async () => {
+    return new Promise((resolve, reject) => {
+      // Check if we're in a Chrome extension environment
+      if (
+        typeof chrome !== "undefined" &&
+        chrome.runtime &&
+        chrome.runtime.sendMessage
+      ) {
+        console.log("Requesting geolocation from service worker...");
+
+        // Send message directly with timeout handling
+        const timeoutId = setTimeout(() => {
+          reject(new Error("Request timed out - please try again"));
+        }, 12000);
+
+        try {
+          chrome.runtime.sendMessage(
+            { type: "get-geolocation" },
+            async (response) => {
+              clearTimeout(timeoutId);
+
+              // Check for Chrome runtime errors
+              if (chrome.runtime.lastError) {
+                console.error(
+                  "Chrome runtime error:",
+                  chrome.runtime.lastError
+                );
+                reject(
+                  new Error(
+                    `Extension error: ${chrome.runtime.lastError.message}`
+                  )
+                );
+                return;
+              }
+
+              // Check if we got a response
+              if (!response) {
+                reject(new Error("No response from extension background"));
+                return;
+              }
+
+              // Handle error responses
+              if (!response.success) {
+                reject(new Error(response.error || "Unknown error occurred"));
+                return;
+              }
+
+              // Extract coordinates
+              const locationData = response.data;
+              if (!locationData || !locationData.coords) {
+                reject(new Error("No location data received"));
+                return;
+              }
+
+              const { latitude, longitude } = locationData.coords;
+              console.log("Got coordinates:", { latitude, longitude });
+
+              try {
+                // Get location details
+                const geocodeResponse = await fetch(
+                  `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+                );
+
+                let locationInfo = {
+                  lat: latitude,
+                  lng: longitude,
+                  city: "Unknown City",
+                  country: "Unknown Country",
+                };
+
+                if (geocodeResponse.ok) {
+                  const data = await geocodeResponse.json();
+                  locationInfo = {
+                    lat: latitude,
+                    lng: longitude,
+                    city: data.city || data.locality || "Unknown City",
+                    country: data.countryName || "Unknown Country",
+                  };
+                }
+
+                console.log("Final location:", locationInfo);
+                resolve(locationInfo);
+              } catch (geocodeError) {
+                console.warn(
+                  "Geocoding failed, using coordinates only:",
+                  geocodeError
+                );
+                resolve({
+                  lat: latitude,
+                  lng: longitude,
+                  city: "Unknown City",
+                  country: "Unknown Country",
+                });
+              }
+            }
+          );
+        } catch (sendError) {
+          clearTimeout(timeoutId);
+          reject(new Error(`Failed to send message: ${sendError.message}`));
+        }
+      } else {
+        // Fallback for non-extension environments
+        if (!navigator.geolocation) {
+          reject(new Error("Geolocation not supported"));
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+
+            try {
+              const geocodeResponse = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+              );
+
+              let locationInfo = {
+                lat: latitude,
+                lng: longitude,
+                city: "Unknown City",
+                country: "Unknown Country",
+              };
+
+              if (geocodeResponse.ok) {
+                const data = await geocodeResponse.json();
+                locationInfo = {
+                  lat: latitude,
+                  lng: longitude,
+                  city: data.city || data.locality || "Unknown City",
+                  country: data.countryName || "Unknown Country",
+                };
+              }
+
+              resolve(locationInfo);
+            } catch (error) {
+              resolve({
+                lat: latitude,
+                lng: longitude,
+                city: "Unknown City",
+                country: "Unknown Country",
+              });
+            }
+          },
+          (error) => {
+            reject(new Error(`Geolocation failed: ${error.message}`));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 8000,
+            maximumAge: 300000,
+          }
+        );
+      }
+    });
+  }, []);
 
   // Fetch prayer times with caching
   const fetchPrayerTimes = useCallback(async () => {
     try {
+      setIsLoading(true);
+
+      // Get user location first
+      const userLocation = await getUserLocation();
+      setLocation(userLocation);
       // Check cache first
       const cachedData = getCachedData();
       if (cachedData) {
@@ -195,9 +207,8 @@ function App() {
 
       // Fetch from API
       const response = await fetch(
-        "https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=8"
+        `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${userLocation.lat}&longitude=${userLocation.lng}&method=8`
       );
-
       if (!response.ok) throw new Error("Network response was not ok");
 
       const data = await response.json();
@@ -238,7 +249,7 @@ function App() {
 
     const updateTimer = () => {
       const currentTime = getCurrentTime();
-      const { nextPrayerTime, prayerName: nextPrayerName } = getNextPrayerTime(
+      const { nextPrayerTime, currentPrayer } = getNextPrayerTime(
         currentTime,
         prayerTimes
       );
@@ -246,8 +257,7 @@ function App() {
       if (nextPrayerTime) {
         const timeDiff = nextPrayerTime.getTime() - currentTime.getTime();
         setRemainingTime(timeDiff);
-        setPrayerName(nextPrayerName);
-        setNextPrayer(nextPrayerTime);
+        setPrayerName(currentPrayer);
       }
     };
 
@@ -317,7 +327,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="container">
       {isOffline && (
         <div
           style={{
@@ -332,46 +342,50 @@ function App() {
         </div>
       )}
 
-      <div className="cp">
-        <NextPrayerTime nextPrayer={nextPrayer} />
+      <div className="header">
+        <svg className="location-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+        </svg>
+        <span>
+          {location.city}, {location.country}
+        </span>
+      </div>
+      <div className="time-hero-section">
+        <div className="time-display">
+          <div className="current-time">
+            {prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
+          </div>
+          <div className="time-info">
+            ends in
+            <span>{formatTime(remainingTime)}</span>{" "}
+          </div>
+        </div>
+        <svg className="mosque-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
       </div>
 
-      <div>
-        {hijriDate &&
-          `${hijriDate.month} ${hijriDate.day}, ${hijriDate.year} ${hijriDate.abbreviated}`}
+      <div className="date-section">
+        <div className="date-label">DATE</div>
+        <div className="islamic-date">
+          {hijriDate &&
+            `${hijriDate.month} ${hijriDate.day}, ${hijriDate.year} ${hijriDate.abbreviated}`}
+        </div>
+        <div className="gregorian-date">
+          {currentDate.toLocaleDateString("en-US", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}
+        </div>
       </div>
 
-      <div className="rt">
-        <span className="prayer">{prayerName}</span>
-        {formatTime(remainingTime)}
-      </div>
-
-      <PrayerList prayerTimes={prayerTimes} />
+      <PrayerList
+        prayerTimes={prayerTimes}
+        prayerName={prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
+      />
       <Footer />
-
-      <style jsx>{`
-        @keyframes bounce {
-          0%,
-          80%,
-          100% {
-            transform: scale(0);
-          }
-          40% {
-            transform: scale(1);
-          }
-        }
-
-        @keyframes wave {
-          0%,
-          40%,
-          100% {
-            transform: scaleY(0.4);
-          }
-          20% {
-            transform: scaleY(1);
-          }
-        }
-      `}</style>
     </div>
   );
 }
