@@ -327,7 +327,7 @@ function App() {
       </div>
 
       <div className="date-section">
-        <div className="date-label">DATE</div>
+        <div className="date-label">DATE ────────</div>
         <div className="islamic-date">
           {hijriDate &&
             `${hijriDate.month} ${hijriDate.day}, ${hijriDate.year} ${hijriDate.abbreviated}`}
