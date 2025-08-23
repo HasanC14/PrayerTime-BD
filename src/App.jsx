@@ -1,16 +1,126 @@
 import { ThreeCircles } from "react-loader-spinner";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   getCachedData,
   setCachedData,
+  getCachedLocation,
+  setCachedLocation,
   formatTime,
   getCurrentTime,
   getNextPrayerTime,
+  cities,
 } from "../src/utils/helpers";
 import "./App.css";
 import Footer from "./components/Footer";
 import PrayerList from "./components/PrayerList";
+
+// Custom Location Dropdown Component
+const LocationDropdown = ({ selectedLocation, onLocationChange, cities }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const dropdownRef = useRef(null);
+  const searchInputRef = useRef(null);
+
+  // Filter cities based on search term
+  const filteredCities = useMemo(() => {
+    return cities.filter((city) =>
+      city.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [cities, searchTerm]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setSearchTerm("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (isOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const handleCitySelect = (city) => {
+    onLocationChange(city.id);
+    setIsOpen(false);
+    setSearchTerm("");
+  };
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      setSearchTerm("");
+    }
+  };
+
+  return (
+    <div className="location-dropdown" ref={dropdownRef}>
+      <div className="dropdown-trigger" onClick={handleToggle}>
+        <span>{selectedLocation?.name || "Select Location"}</span>
+        <svg
+          className={`dropdown-arrow ${isOpen ? "open" : ""}`}
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M7 10l5 5 5-5z" />
+        </svg>
+      </div>
+
+      {isOpen && (
+        <div className="dropdown-menu">
+          <div className="search-container">
+            <svg
+              className="search-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            </svg>
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search location..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
+
+          <div className="dropdown-list">
+            {filteredCities.length > 0 ? (
+              filteredCities.map((city) => (
+                <div
+                  key={city.id}
+                  className={`dropdown-item ${
+                    selectedLocation?.id === city.id ? "selected" : ""
+                  }`}
+                  onClick={() => handleCitySelect(city)}
+                >
+                  {city.name}
+                </div>
+              ))
+            ) : (
+              <div className="dropdown-item no-results">No locations found</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Main App Component
 function App() {
@@ -21,180 +131,41 @@ function App() {
   const [hijriDate, setHijriDate] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [location, setLocation] = useState({
-    city: "",
-    country: "",
-    lat: null,
-    lng: null,
-  });
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const timestamp = Math.floor(Date.now() / 1000);
 
-  // Simplified getUserLocation function with direct messaging
-  const getUserLocation = useCallback(async () => {
-    return new Promise((resolve, reject) => {
-      // Check if we're in a Chrome extension environment
-      if (
-        typeof chrome !== "undefined" &&
-        chrome.runtime &&
-        chrome.runtime.sendMessage
-      ) {
-        console.log("Requesting geolocation from service worker...");
-
-        // Send message directly with timeout handling
-        const timeoutId = setTimeout(() => {
-          reject(new Error("Request timed out - please try again"));
-        }, 12000);
-
-        try {
-          chrome.runtime.sendMessage(
-            { type: "get-geolocation" },
-            async (response) => {
-              clearTimeout(timeoutId);
-
-              // Check for Chrome runtime errors
-              if (chrome.runtime.lastError) {
-                console.error(
-                  "Chrome runtime error:",
-                  chrome.runtime.lastError
-                );
-                reject(
-                  new Error(
-                    `Extension error: ${chrome.runtime.lastError.message}`
-                  )
-                );
-                return;
-              }
-
-              // Check if we got a response
-              if (!response) {
-                reject(new Error("No response from extension background"));
-                return;
-              }
-
-              // Handle error responses
-              if (!response.success) {
-                reject(new Error(response.error || "Unknown error occurred"));
-                return;
-              }
-
-              // Extract coordinates
-              const locationData = response.data;
-              if (!locationData || !locationData.coords) {
-                reject(new Error("No location data received"));
-                return;
-              }
-
-              const { latitude, longitude } = locationData.coords;
-              console.log("Got coordinates:", { latitude, longitude });
-
-              try {
-                // Get location details
-                const geocodeResponse = await fetch(
-                  `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-                );
-
-                let locationInfo = {
-                  lat: latitude,
-                  lng: longitude,
-                  city: "Unknown City",
-                  country: "Unknown Country",
-                };
-
-                if (geocodeResponse.ok) {
-                  const data = await geocodeResponse.json();
-                  locationInfo = {
-                    lat: latitude,
-                    lng: longitude,
-                    city: data.city || data.locality || "Unknown City",
-                    country: data.countryName || "Unknown Country",
-                  };
-                }
-
-                console.log("Final location:", locationInfo);
-                resolve(locationInfo);
-              } catch (geocodeError) {
-                console.warn(
-                  "Geocoding failed, using coordinates only:",
-                  geocodeError
-                );
-                resolve({
-                  lat: latitude,
-                  lng: longitude,
-                  city: "Unknown City",
-                  country: "Unknown Country",
-                });
-              }
-            }
-          );
-        } catch (sendError) {
-          clearTimeout(timeoutId);
-          reject(new Error(`Failed to send message: ${sendError.message}`));
-        }
-      } else {
-        // Fallback for non-extension environments
-        if (!navigator.geolocation) {
-          reject(new Error("Geolocation not supported"));
-          return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
-
-            try {
-              const geocodeResponse = await fetch(
-                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-              );
-
-              let locationInfo = {
-                lat: latitude,
-                lng: longitude,
-                city: "Unknown City",
-                country: "Unknown Country",
-              };
-
-              if (geocodeResponse.ok) {
-                const data = await geocodeResponse.json();
-                locationInfo = {
-                  lat: latitude,
-                  lng: longitude,
-                  city: data.city || data.locality || "Unknown City",
-                  country: data.countryName || "Unknown Country",
-                };
-              }
-
-              resolve(locationInfo);
-            } catch (error) {
-              resolve({
-                lat: latitude,
-                lng: longitude,
-                city: "Unknown City",
-                country: "Unknown Country",
-              });
-            }
-          },
-          (error) => {
-            reject(new Error(`Geolocation failed: ${error.message}`));
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 8000,
-            maximumAge: 300000,
-          }
-        );
-      }
-    });
+  // Initialize location on app start
+  useEffect(() => {
+    const cachedLocation = getCachedLocation();
+    if (cachedLocation) {
+      setSelectedLocation(cachedLocation);
+    } else {
+      // Default to Dhaka
+      const dhaka = cities.find((city) => city.name === "Dhaka");
+      setSelectedLocation(dhaka);
+      setCachedLocation(dhaka);
+    }
   }, []);
 
-  // Fetch prayer times with caching
+  // Handle location change
+  const handleLocationChange = (cityId) => {
+    const newLocation = cities.find((city) => city.id === parseInt(cityId));
+    if (newLocation) {
+      setSelectedLocation(newLocation);
+      setCachedLocation(newLocation);
+      // Clear existing prayer times cache when location changes
+      localStorage.removeItem("prayerTimesCache");
+    }
+  };
+
+  // Fetch prayer times with selected location
   const fetchPrayerTimes = useCallback(async () => {
+    if (!selectedLocation) return;
+
     try {
       setIsLoading(true);
 
-      // Get user location first
-      const userLocation = await getUserLocation();
-      setLocation(userLocation);
       // Check cache first
       const cachedData = getCachedData();
       if (cachedData) {
@@ -207,7 +178,7 @@ function App() {
 
       // Fetch from API
       const response = await fetch(
-        `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${userLocation.lat}&longitude=${userLocation.lng}&method=8`
+        `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}&method=8`
       );
       if (!response.ok) throw new Error("Network response was not ok");
 
@@ -241,7 +212,7 @@ function App() {
       }
       setIsLoading(false);
     }
-  }, []);
+  }, [selectedLocation, timestamp]);
 
   // Timer effect
   useEffect(() => {
@@ -266,10 +237,12 @@ function App() {
     return () => clearInterval(interval);
   }, [prayerTimes]);
 
-  // Initial data fetch
+  // Fetch prayer times when location changes
   useEffect(() => {
-    fetchPrayerTimes();
-  }, [fetchPrayerTimes]);
+    if (selectedLocation) {
+      fetchPrayerTimes();
+    }
+  }, [selectedLocation, fetchPrayerTimes]);
 
   // Network status listener
   useEffect(() => {
@@ -292,7 +265,7 @@ function App() {
           <ThreeCircles
             height="100"
             width="100"
-            color="rgb(199, 195, 195)"
+            color="#d2a4db"
             visible={true}
           />
         </div>
@@ -303,25 +276,12 @@ function App() {
   if (!prayerTimes) {
     return (
       <div className="load">
-        <div>
-          <p>
-            Unable to load prayer times. Please check your internet connection.
-          </p>
-          <button
-            onClick={fetchPrayerTimes}
-            style={{
-              padding: "10px 20px",
-              marginTop: "10px",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            Retry
-          </button>
-        </div>
+        <p>
+          Unable to load prayer times. Please check your internet connection.
+        </p>
+        <button onClick={fetchPrayerTimes} className="retry-button">
+          Retry
+        </button>
       </div>
     );
   }
@@ -346,10 +306,13 @@ function App() {
         <svg className="location-icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
         </svg>
-        <span>
-          {location.city}, {location.country}
-        </span>
+        <LocationDropdown
+          selectedLocation={selectedLocation}
+          onLocationChange={handleLocationChange}
+          cities={cities}
+        />
       </div>
+
       <div className="time-hero-section">
         <div className="time-display">
           <div className="current-time">
@@ -360,9 +323,7 @@ function App() {
             <span>{formatTime(remainingTime)}</span>{" "}
           </div>
         </div>
-        <svg className="mosque-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
+        <img src="/logo1.png" alt="" />
       </div>
 
       <div className="date-section">

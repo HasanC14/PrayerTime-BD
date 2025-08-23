@@ -32,10 +32,13 @@ export default function PrayerList({ prayerTimes, prayerName }) {
             prayerName == prayer.name ? "active" : ""
           } `}
         >
-          <svg className="prayer-icon" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="12" r="5" />
-            <path d="m12 1-3 6-6-3 6 3-3 6 3-6 6 3-6-3 3-6z" />
-          </svg>
+          <div className="prayer-icon">
+            <img
+              src={`/${prayer.name}.svg`}
+              alt={prayer.name}
+              width={prayer.name === "Isha" ? 16 : 20}
+            />
+          </div>
           <div className="prayer-info">
             <span className="prayer-name">{prayer.name}</span>
             <div style={{ display: "flex", alignItems: "center" }}>

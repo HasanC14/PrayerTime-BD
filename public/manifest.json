@@ -5,16 +5,10 @@
   "version": "1.0",
   "action": {
     "default_popup": "index.html",
-    "default_icon": "logo.jpeg"
+    "default_icon": "logo512.png"
   },
   "permissions": ["offscreen"],
-  "host_permissions": [
-    "https://api.aladhan.com/*",
-    "https://api.bigdatacloud.net/*"
-  ],
-  "background": {
-    "service_worker": "service_worker.js"
-  },
+  "host_permissions": ["https://api.aladhan.com/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }
