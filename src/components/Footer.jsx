@@ -3,7 +3,7 @@ export default function Footer() {
   return (
     <div className="footer">
       <a
-        href="https://github.com/HasanC14/Islamic-Prayer-Time"
+        href="https://github.com/HasanC14/PrayerTime-BD"
         target="_blank"
         rel="noreferrer"
       >

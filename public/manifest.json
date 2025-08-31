@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Islamic Prayer Time",
-  "description": "Get accurate prayer times for Bangladesh with the Islamic Prayer Time Chrome extension. This extension provides the exact timings for all prayers.",
+  "name": "PrayerTime BD",
+  "description": "Get accurate prayer times for Bangladesh with the PrayerTime BD Chrome extension. This extension provides the exact timings for all prayers.",
   "version": "1.0",
   "action": {
     "default_popup": "index.html",

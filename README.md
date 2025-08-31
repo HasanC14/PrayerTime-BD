@@ -1,7 +1,8 @@
-# Islamic prayer time(Bangladesh Only) Chrome Extension
+# PrayerTime BD(Bangladesh Only) Chrome Extension
 
-Islamic Prayer Time is a convenient and user-friendly Chrome extension that helps Muslims keep track of their daily prayers. With this extension, you can easily access the remaining time until the next prayer and view all prayer times for the current date. Designed with simplicity in mind, Islamic Prayer Time provides an accurate and reliable source of information, ensuring you never miss a prayer again. Download Islamic Prayer Time today and stay on top of your daily prayers with ease.
-[![Download Islamic Prayer Time](https://i.postimg.cc/W3HmW2my/8241704-removebg-preview.png)](https://github.com/HasanC14/Islamic-Prayer-Time/releases/download/v1.0.0/Islamic.Prayer.Time.rar)
+PrayerTime BD is a simple and easy-to-use Chrome extension that helps Muslims in Bangladesh keep track of their daily prayers. You can quickly see the time left until the next prayer and view all prayer times for today. I built this extension because I could not find any good tool for Bangladesh, and I wanted to see my next prayer time so I don't miss my prayers. Download PrayerTime BD and stay updated with your prayer times easily.
+
+[![Download PrayerTime BD](https://i.postimg.cc/W3HmW2my/8241704-removebg-preview.png)](https://github.com/HasanC14/PrayerTime-BD/releases/download/v1.0.0/Islamic.Prayer.Time.rar)
 
 ## Features
 
@@ -11,22 +12,20 @@ Islamic Prayer Time is a convenient and user-friendly Chrome extension that help
 
 ## Installation
 
-1. Download the extension from the extension file.
+### From Chrome Web Store
+
+1. Visit the [Chrome Web Store page for PrayerTime BD](#) (link will be provided when available).
+2. Click **Add to Chrome**.
+3. Confirm the installation in the popup dialog.
+
+### Manual Installation
+
+1. Download the extension from the release file above.
 2. Unzip the file.
-3. In Chrome, open the extensions page (chrome://extensions).
+3. In Chrome, open the extensions page (`chrome://extensions`).
 4. Enable developer mode by clicking the toggle switch in the top right corner.
-5. Click the "Load unpacked" button.
-6. Select the unzipped folder.
-
-## Video
-
-[![Prayer Time Chrome Extension](https://i.postimg.cc/mrHNXc2F/9419-removebg-preview.png)](https://www.youtube.com/watch?v=IE4AB3M6iMI)
-
-Check out the video to learn how to install the extension.
-
-## Usage
-
-The extension will automatically display the current prayer time and the name of the next prayer in the extension badge. The badge will update automatically every minute.
+5. Click the **Load unpacked** button.
+6. Select the `dist` folder from the unzipped files.
 
 ## API
 
@@ -35,9 +34,3 @@ The prayer times are fetched from the [Prayer Times API by Aladhan.com](https://
 ## License
 
 This extension is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
-
-## Credits
-
-- [Moment.js](https://momentjs.com/)
-- [ReactJs](https://reactjs.org/)
-- [Aladhan API](https://aladhan.com/prayer-times-api)
