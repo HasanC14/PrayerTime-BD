@@ -2,7 +2,7 @@
 
 PrayerTime BD is a simple and easy-to-use Chrome extension that helps Muslims in Bangladesh keep track of their daily prayers. You can quickly see the time left until the next prayer and view all prayer times for today. I built this extension because I could not find any good tool for Bangladesh, and I wanted to see my next prayer time so I don't miss my prayers. Download PrayerTime BD and stay updated with your prayer times easily.
 
-[![Download PrayerTime BD](https://i.postimg.cc/W3HmW2my/8241704-removebg-preview.png)](https://github.com/HasanC14/PrayerTime-BD/releases/download/v1.0.0/Islamic.Prayer.Time.rar)
+[![Download PrayerTime BD](https://i.postimg.cc/W3HmW2my/8241704-removebg-preview.png)](https://chromewebstore.google.com/detail/prayertime-bd/pcnigmnekhgconipkmhlfhbjddhcjcdj)
 
 ## Features
 
@@ -14,7 +14,7 @@ PrayerTime BD is a simple and easy-to-use Chrome extension that helps Muslims in
 
 ### From Chrome Web Store
 
-1. Visit the [Chrome Web Store page for PrayerTime BD](#) (link will be provided when available).
+1. Visit the [Chrome Web Store page for PrayerTime BD](https://chromewebstore.google.com/detail/prayertime-bd/pcnigmnekhgconipkmhlfhbjddhcjcdj).
 2. Click **Add to Chrome**.
 3. Confirm the installation in the popup dialog.
 
