@@ -1,0 +1,443 @@
+/**
+ * Design System - CSS Custom Properties
+ * Centralized design tokens for consistent styling across the application
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+	/* ===== COLOR SYSTEM ===== */
+
+	/* Primary Colors */
+	--color-primary: #8b5cf6;
+	--color-primary-light: #a855f7;
+	--color-primary-dark: #7c3aed;
+	--color-primary-alpha: rgba(139, 92, 246, 0.1);
+
+	/* Secondary Colors */
+	--color-secondary: #6f6885;
+	--color-secondary-light: #8b8fa3;
+	--color-secondary-dark: #54576b;
+
+	/* Accent Colors */
+	--color-accent: #d7bedc;
+	--color-accent-light: #ecdfee;
+	--color-accent-alpha: rgba(215, 190, 220, 0.3);
+
+	/* Neutral Colors */
+	--color-text-primary: #170939;
+	--color-text-secondary: #6f6885;
+	--color-text-muted: #9ca3af;
+	--color-text-inverse: #ffffff;
+
+	/* Background Colors */
+	--color-bg-primary: #ffffff;
+	--color-bg-secondary: #f9fafb;
+	--color-bg-muted: #f3f4f6;
+	--color-bg-overlay: rgba(0, 0, 0, 0.5);
+
+	/* Glass Morphism */
+	--glass-primary: rgba(255, 255, 255, 0.15);
+	--glass-secondary: rgba(255, 255, 255, 0.08);
+	--glass-border: rgba(255, 255, 255, 0.2);
+	--glass-backdrop: blur(25px);
+
+	/* Status Colors */
+	--color-success: #10b981;
+	--color-warning: #f59e0b;
+	--color-error: #ef4444;
+	--color-info: #3b82f6;
+
+	/* ===== SPACING SYSTEM ===== */
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 24px;
+	--spacing-xl: 32px;
+	--spacing-xxl: 48px;
+	--spacing-xxxl: 64px;
+
+	/* ===== TYPOGRAPHY SYSTEM ===== */
+	--font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+		sans-serif;
+	--font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono',
+		monospace;
+
+	/* Font Sizes */
+	--font-size-xs: 10px;
+	--font-size-sm: 12px;
+	--font-size-base: 14px;
+	--font-size-lg: 16px;
+	--font-size-xl: 18px;
+	--font-size-xxl: 20px;
+	--font-size-xxxl: 24px;
+
+	/* Font Weights */
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+
+	/* Line Heights */
+	--line-height-tight: 1.2;
+	--line-height-normal: 1.5;
+	--line-height-loose: 1.8;
+
+	/* Letter Spacing */
+	--letter-spacing-tight: -0.02em;
+	--letter-spacing-normal: 0;
+	--letter-spacing-wide: 0.05em;
+
+	/* ===== BORDER RADIUS SYSTEM ===== */
+	--border-radius-xs: 4px;
+	--border-radius-sm: 8px;
+	--border-radius-md: 12px;
+	--border-radius-lg: 16px;
+	--border-radius-xl: 20px;
+	--border-radius-xxl: 24px;
+	--border-radius-full: 9999px;
+
+	/* ===== SHADOW SYSTEM ===== */
+	--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+	--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+	--shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+	--shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+
+	/* Glass Shadows */
+	--shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	--shadow-glass-hover: 0 12px 40px rgba(0, 0, 0, 0.15),
+		inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+	/* ===== ANIMATION SYSTEM ===== */
+	--duration-fast: 0.15s;
+	--duration-normal: 0.3s;
+	--duration-slow: 0.5s;
+
+	--easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+	--easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	--easing-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+	/* ===== Z-INDEX SYSTEM ===== */
+	--z-dropdown: 1000;
+	--z-sticky: 1020;
+	--z-modal: 1050;
+	--z-popover: 1060;
+	--z-tooltip: 1070;
+	--z-notification: 1080;
+
+	/* ===== LAYOUT SYSTEM ===== */
+	--container-width: 380px;
+	--container-height: 600px;
+	--content-max-width: 1200px;
+
+	/* ===== COMPONENT SPECIFIC ===== */
+
+	/* Buttons */
+	--button-height-sm: 32px;
+	--button-height-md: 40px;
+	--button-height-lg: 48px;
+	--button-padding-x: var(--spacing-md);
+	--button-border-radius: var(--border-radius-lg);
+
+	/* Form Elements */
+	--input-height: 44px;
+	--input-padding-x: var(--spacing-md);
+	--input-border-radius: var(--border-radius-md);
+	--input-border-color: var(--glass-border);
+	--input-focus-color: var(--color-primary);
+
+	/* Cards */
+	--card-padding: var(--spacing-lg);
+	--card-border-radius: var(--border-radius-xl);
+	--card-background: var(--glass-primary);
+	--card-border: 1px solid var(--glass-border);
+
+	/* Prayer Cards */
+	--prayer-card-padding: var(--spacing-md) var(--spacing-lg);
+	--prayer-card-gap: var(--spacing-md);
+	--prayer-icon-size: 44px;
+	--prayer-icon-border-radius: var(--border-radius-lg);
+
+	/* ===== GRADIENTS ===== */
+	--gradient-primary: linear-gradient(
+		135deg,
+		var(--color-primary),
+		var(--color-primary-light)
+	);
+	--gradient-background: linear-gradient(
+		135deg,
+		var(--color-accent) 0%,
+		var(--color-accent-light) 100%
+	);
+	--gradient-glass: linear-gradient(
+		135deg,
+		var(--glass-primary) 0%,
+		var(--glass-secondary) 100%
+	);
+	--gradient-shimmer: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.2),
+		transparent
+	);
+
+	/* ===== DARK MODE SUPPORT ===== */
+	--color-mode: 'light';
+}
+
+/* Dark Mode Color Overrides */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-mode: 'dark';
+
+		/* Text Colors */
+		--color-text-primary: #f9fafb;
+		--color-text-secondary: #d1d5db;
+		--color-text-muted: #9ca3af;
+		--color-text-inverse: #111827;
+
+		/* Background Colors */
+		--color-bg-primary: #111827;
+		--color-bg-secondary: #1f2937;
+		--color-bg-muted: #374151;
+
+		/* Glass Morphism - darker for dark mode */
+		--glass-primary: rgba(255, 255, 255, 0.05);
+		--glass-secondary: rgba(255, 255, 255, 0.02);
+		--glass-border: rgba(255, 255, 255, 0.1);
+
+		/* Gradient adjustments */
+		--gradient-background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+	}
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Flexbox Utilities */
+.flex {
+	display: flex;
+}
+.flex-col {
+	flex-direction: column;
+}
+.flex-row {
+	flex-direction: row;
+}
+.items-center {
+	align-items: center;
+}
+.items-start {
+	align-items: flex-start;
+}
+.items-end {
+	align-items: flex-end;
+}
+.justify-center {
+	justify-content: center;
+}
+.justify-between {
+	justify-content: space-between;
+}
+.justify-start {
+	justify-content: flex-start;
+}
+.justify-end {
+	justify-content: flex-end;
+}
+.flex-1 {
+	flex: 1;
+}
+.flex-none {
+	flex: none;
+}
+
+/* Spacing Utilities */
+.gap-xs {
+	gap: var(--spacing-xs);
+}
+.gap-sm {
+	gap: var(--spacing-sm);
+}
+.gap-md {
+	gap: var(--spacing-md);
+}
+.gap-lg {
+	gap: var(--spacing-lg);
+}
+.gap-xl {
+	gap: var(--spacing-xl);
+}
+
+/* Padding Utilities */
+.p-xs {
+	padding: var(--spacing-xs);
+}
+.p-sm {
+	padding: var(--spacing-sm);
+}
+.p-md {
+	padding: var(--spacing-md);
+}
+.p-lg {
+	padding: var(--spacing-lg);
+}
+.p-xl {
+	padding: var(--spacing-xl);
+}
+
+.px-xs {
+	padding-left: var(--spacing-xs);
+	padding-right: var(--spacing-xs);
+}
+.px-sm {
+	padding-left: var(--spacing-sm);
+	padding-right: var(--spacing-sm);
+}
+.px-md {
+	padding-left: var(--spacing-md);
+	padding-right: var(--spacing-md);
+}
+.px-lg {
+	padding-left: var(--spacing-lg);
+	padding-right: var(--spacing-lg);
+}
+
+.py-xs {
+	padding-top: var(--spacing-xs);
+	padding-bottom: var(--spacing-xs);
+}
+.py-sm {
+	padding-top: var(--spacing-sm);
+	padding-bottom: var(--spacing-sm);
+}
+.py-md {
+	padding-top: var(--spacing-md);
+	padding-bottom: var(--spacing-md);
+}
+.py-lg {
+	padding-top: var(--spacing-lg);
+	padding-bottom: var(--spacing-lg);
+}
+
+/* Typography Utilities */
+.text-xs {
+	font-size: var(--font-size-xs);
+}
+.text-sm {
+	font-size: var(--font-size-sm);
+}
+.text-base {
+	font-size: var(--font-size-base);
+}
+.text-lg {
+	font-size: var(--font-size-lg);
+}
+.text-xl {
+	font-size: var(--font-size-xl);
+}
+.text-xxl {
+	font-size: var(--font-size-xxl);
+}
+
+.font-normal {
+	font-weight: var(--font-weight-normal);
+}
+.font-medium {
+	font-weight: var(--font-weight-medium);
+}
+.font-semibold {
+	font-weight: var(--font-weight-semibold);
+}
+.font-bold {
+	font-weight: var(--font-weight-bold);
+}
+
+.text-primary {
+	color: var(--color-text-primary);
+}
+.text-secondary {
+	color: var(--color-text-secondary);
+}
+.text-muted {
+	color: var(--color-text-muted);
+}
+.text-accent {
+	color: var(--color-primary);
+}
+
+/* Border Radius Utilities */
+.rounded-xs {
+	border-radius: var(--border-radius-xs);
+}
+.rounded-sm {
+	border-radius: var(--border-radius-sm);
+}
+.rounded-md {
+	border-radius: var(--border-radius-md);
+}
+.rounded-lg {
+	border-radius: var(--border-radius-lg);
+}
+.rounded-xl {
+	border-radius: var(--border-radius-xl);
+}
+.rounded-full {
+	border-radius: var(--border-radius-full);
+}
+
+/* Shadow Utilities */
+.shadow-sm {
+	box-shadow: var(--shadow-sm);
+}
+.shadow-md {
+	box-shadow: var(--shadow-md);
+}
+.shadow-lg {
+	box-shadow: var(--shadow-lg);
+}
+.shadow-glass {
+	box-shadow: var(--shadow-glass);
+}
+
+/* Animation Utilities */
+.transition {
+	transition: all var(--duration-normal) var(--easing-default);
+}
+.transition-fast {
+	transition: all var(--duration-fast) var(--easing-default);
+}
+.transition-slow {
+	transition: all var(--duration-slow) var(--easing-default);
+}
+
+/* Accessibility Utilities */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.focus-outline:focus {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 2px;
+}
+
+/* Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

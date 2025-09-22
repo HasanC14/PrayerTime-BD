@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+:root {
+	--primary-text-color: #170939;
+	--secondary-text-color: #6f6885;
+}
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	width: 360px;  /* Reduced from 380px */
+	height: 550px;  /* Reduced from 600px */
+	background: linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%);
+	color: var(--primary-text-color);
+}
+
+.container {
+	padding: 12px;  /* Reduced from 18px */
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-bottom: 6px;  /* Reduced from 8px */
+	color: var(--primary-text-color);
+	font-size: 11px;  /* Reduced from 12px */
+	font-weight: 500;
+	justify-content: space-between;
+}
+
+/* More compact prayer cards */
+.prayer-card-modern {
+	padding: 12px 16px !important;  /* Reduced from 16px 20px */
+}
+
+.prayer-card-modern .prayer-icon-container {
+	width: 38px !important;  /* Reduced from 44px */
+	height: 38px !important;  /* Reduced from 44px */
+}
+
+.prayer-card-modern .prayer-name-modern {
+	font-size: 14px !important;  /* Reduced from 15px */
+}
+
+.time-hero-section {
+	margin-bottom: 12px;  /* Reduced from 15px */
+}
+
+.time-hero-section img {
+	height: 100px;  /* Reduced from 120px */
+}
+
+.current-time {
+	font-size: 38px;  /* Reduced from 44px */
+	font-weight: 600;
+}
+
+.prayer-times {
+	padding: 16px 12px !important;  /* Reduced from 20px 16px */
+	gap: 12px !important;  /* Reduced from 16px */
+}
+
+/* Reduce toggle button size */
+.view-toggle {
+	margin-bottom: 12px;  /* Reduced from 16px */
+}
+
+.toggle-btn {
+	padding: 6px 10px;  /* Reduced from 8px 12px */
+	font-size: 11px;  /* Reduced from 12px */
+}
+
+/* Remove forced scrolling */
+.prayer-times {
+	max-height: none !important; /* Remove fixed max-height */
+	overflow-y: visible !important; /* Remove forced scrollbar */
+}
+
+/* Reduced footer */
+.footer {
+	margin-top: 12px;  /* Reduced from 20px */
+}
+
+.footer a {
+	font-size: 16px;  /* Reduced from 18px */
+}
+
+/* Reduce date section */
+.date-section {
+	margin-bottom: 14px;  /* Reduced from 20px */
+}
+
+.islamic-date {
+	font-size: 16px;  /* Reduced from 18px */
+}
