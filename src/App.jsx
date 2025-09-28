@@ -1,354 +1,534 @@
-import { ThreeCircles } from "react-loader-spinner";
+/* global chrome */
+import { ThreeCircles } from 'react-loader-spinner';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
-  getCachedData,
-  setCachedData,
-  getCachedLocation,
-  setCachedLocation,
-  formatTime,
-  getCurrentTime,
-  getNextPrayerTime,
-  cities,
-} from "../src/utils/helpers";
-import "./App.css";
-import Footer from "./components/Footer";
-import PrayerList from "./components/PrayerList";
+	getCachedData,
+	setCachedData,
+	getCachedLocation,
+	setCachedLocation,
+	formatTime,
+	getCurrentTime,
+	getNextPrayerTime,
+	getNextJamaatTime,
+	cities,
+	getCustomJamaatSettings,
+	calculateCustomJamaatTimes,
+} from '../src/utils/helpers';
+import './App.css';
+import Footer from './components/Footer';
+import PrayerList from './components/PrayerList';
+import JamaatList from './components/JamaatList';
+import CustomJamaatSettings from './components/CustomJamaatSettings';
+import JamaatTimeCard from './components/JamaatTimeCard';
+import Settings from './components/Settings';
+import { FaCog, FaMosque } from 'react-icons/fa';
 
 // Custom Location Dropdown Component
 const LocationDropdown = ({ selectedLocation, onLocationChange, cities }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const dropdownRef = useRef(null);
-  const searchInputRef = useRef(null);
+	const [isOpen, setIsOpen] = useState(false);
+	const [searchTerm, setSearchTerm] = useState('');
+	const dropdownRef = useRef(null);
+	const searchInputRef = useRef(null);
 
-  // Filter cities based on search term
-  const filteredCities = useMemo(() => {
-    return cities.filter((city) =>
-      city.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [cities, searchTerm]);
+	// Filter cities based on search term
+	const filteredCities = useMemo(() => {
+		return cities.filter((city) =>
+			city.name.toLowerCase().includes(searchTerm.toLowerCase())
+		);
+	}, [cities, searchTerm]);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-        setSearchTerm("");
-      }
-    };
+	// Close dropdown when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+				setIsOpen(false);
+				setSearchTerm('');
+			}
+		};
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
 
-  // Focus search input when dropdown opens
-  useEffect(() => {
-    if (isOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [isOpen]);
+	// Focus search input when dropdown opens
+	useEffect(() => {
+		if (isOpen && searchInputRef.current) {
+			searchInputRef.current.focus();
+		}
+	}, [isOpen]);
 
-  const handleCitySelect = (city) => {
-    onLocationChange(city.id);
-    setIsOpen(false);
-    setSearchTerm("");
-  };
+	const handleCitySelect = (city) => {
+		onLocationChange(city.id);
+		setIsOpen(false);
+		setSearchTerm('');
+	};
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      setSearchTerm("");
-    }
-  };
+	const handleToggle = () => {
+		setIsOpen(!isOpen);
+		if (!isOpen) {
+			setSearchTerm('');
+		}
+	};
 
-  return (
-    <div className="location-dropdown" ref={dropdownRef}>
-      <div className="dropdown-trigger" onClick={handleToggle}>
-        <span>{selectedLocation?.name || "Select Location"}</span>
-        <svg
-          className={`dropdown-arrow ${isOpen ? "open" : ""}`}
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M7 10l5 5 5-5z" />
-        </svg>
-      </div>
+	return (
+		<div className='location-dropdown' ref={dropdownRef}>
+			<div className='dropdown-trigger' onClick={handleToggle}>
+				<span>{selectedLocation?.name || 'Select Location'}</span>
+				<svg
+					className={`dropdown-arrow ${isOpen ? 'open' : ''}`}
+					width='12'
+					height='12'
+					viewBox='0 0 24 24'
+					fill='currentColor'
+				>
+					<path d='M7 10l5 5 5-5z' />
+				</svg>
+			</div>
 
-      {isOpen && (
-        <div className="dropdown-menu">
-          <div className="search-container">
-            <svg
-              className="search-icon"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-            </svg>
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search location..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
-          </div>
+			{isOpen && (
+				<div className='dropdown-menu'>
+					<div className='search-container'>
+						<svg
+							className='search-icon'
+							width='16'
+							height='16'
+							viewBox='0 0 24 24'
+							fill='currentColor'
+						>
+							<path d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z' />
+						</svg>
+						<input
+							ref={searchInputRef}
+							type='text'
+							placeholder='Search location...'
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							className='search-input'
+						/>
+					</div>
 
-          <div className="dropdown-list">
-            {filteredCities.length > 0 ? (
-              filteredCities.map((city) => (
-                <div
-                  key={city.id}
-                  className={`dropdown-item ${
-                    selectedLocation?.id === city.id ? "selected" : ""
-                  }`}
-                  onClick={() => handleCitySelect(city)}
-                >
-                  {city.name}
-                </div>
-              ))
-            ) : (
-              <div className="dropdown-item no-results">No locations found</div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+					<div className='dropdown-list'>
+						{filteredCities.length > 0 ? (
+							filteredCities.map((city) => (
+								<div
+									key={city.id}
+									className={`dropdown-item ${
+										selectedLocation?.id === city.id ? 'selected' : ''
+									}`}
+									onClick={() => handleCitySelect(city)}
+								>
+									{city.name}
+								</div>
+							))
+						) : (
+							<div className='dropdown-item no-results'>No locations found</div>
+						)}
+					</div>
+				</div>
+			)}
+		</div>
+	);
 };
 
 // Main App Component
 function App() {
-  const [remainingTime, setRemainingTime] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [prayerTimes, setPrayerTimes] = useState(null);
-  const [prayerName, setPrayerName] = useState(null);
-  const [hijriDate, setHijriDate] = useState(null);
-  const [isOffline, setIsOffline] = useState(false);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedLocation, setSelectedLocation] = useState(null);
+	const [remainingTime, setRemainingTime] = useState(null);
+	const [jamaatRemainingTime, setJamaatRemainingTime] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [prayerTimes, setPrayerTimes] = useState(null);
+	const [jamaatTimes, setJamaatTimes] = useState(null);
+	const [prayerName, setPrayerName] = useState(null);
+	const [jamaatPrayerName, setJamaatPrayerName] = useState(null);
+	const [currentJamaat, setCurrentJamaat] = useState(null);
+	const [hijriDate, setHijriDate] = useState(null);
+	const [isOffline, setIsOffline] = useState(false);
+	const [currentDate] = useState(new Date());
+	const [selectedLocation, setSelectedLocation] = useState(null);
+	const [jamaatOffsets, setJamaatOffsets] = useState(null);
+	const [showJamaatView, setShowJamaatView] = useState(false);
+	const [showSettings, setShowSettings] = useState(false);
+	const [showJamaatSettings, setShowJamaatSettings] = useState(false);
+	const [selectedJamaatPrayer, setSelectedJamaatPrayer] = useState(null);
 
-  const timestamp = Math.floor(Date.now() / 1000);
+	const timestamp = Math.floor(Date.now() / 1000);
 
-  // Initialize location on app start
-  useEffect(() => {
-    const cachedLocation = getCachedLocation();
-    if (cachedLocation) {
-      setSelectedLocation(cachedLocation);
-    } else {
-      // Default to Dhaka
-      const dhaka = cities.find((city) => city.name === "Dhaka");
-      setSelectedLocation(dhaka);
-      setCachedLocation(dhaka);
-    }
-  }, []);
+	// Initialize location and jamaat settings on app start
+	useEffect(() => {
+		const cachedLocation = getCachedLocation();
+		if (cachedLocation) {
+			setSelectedLocation(cachedLocation);
+		} else {
+			// Default to Dhaka
+			const dhaka = cities.find((city) => city.name === 'Dhaka');
+			setSelectedLocation(dhaka);
+			setCachedLocation(dhaka);
+		}
 
-  // Handle location change
-  const handleLocationChange = (cityId) => {
-    const newLocation = cities.find((city) => city.id === parseInt(cityId));
-    if (newLocation) {
-      setSelectedLocation(newLocation);
-      setCachedLocation(newLocation);
-      // Clear existing prayer times cache when location changes
-      localStorage.removeItem("prayerTimesCache");
-    }
-  };
+		// Load custom jamaat settings
+		const loadJamaatSettings = async () => {
+			const customJamaatSettings = await getCustomJamaatSettings();
+			if (customJamaatSettings) {
+				setJamaatOffsets(customJamaatSettings);
+			} else {
+				// Initialize with default offsets to show the toggle button
+				const defaultOffsets = {
+					Fajr: 10, // Capitalized key to match prayerTimes object keys
+					Dhuhr: 10, // Capitalized key to match prayerTimes object keys
+					Asr: 10, // Capitalized key to match prayerTimes object keys
+					Maghrib: 5, // Capitalized key to match prayerTimes object keys
+					Isha: 10, // Capitalized key to match prayerTimes object keys
+				};
+				setJamaatOffsets(defaultOffsets);
+			}
+		};
+		loadJamaatSettings();
+	}, []);
 
-  // Fetch prayer times with selected location
-  const fetchPrayerTimes = useCallback(async () => {
-    if (!selectedLocation) return;
+	// Calculate Jamaat times when jamaat offsets or prayer times change
+	useEffect(() => {
+		if (prayerTimes && jamaatOffsets) {
+			const calculatedJamaatTimes = calculateCustomJamaatTimes(
+				prayerTimes,
+				jamaatOffsets
+			);
+			setJamaatTimes(calculatedJamaatTimes);
 
-    try {
-      setIsLoading(true);
+			// Save to storage for background script
+			if (typeof chrome !== 'undefined' && chrome.storage) {
+				chrome.storage.local.set({
+					jamaatTimesCache: calculatedJamaatTimes,
+				});
+			} else {
+				localStorage.setItem(
+					'jamaatTimesCache',
+					JSON.stringify(calculatedJamaatTimes)
+				);
+			}
+		} else {
+			setJamaatTimes(null);
+		}
+	}, [prayerTimes, jamaatOffsets]);
 
-      // Check cache first
-      const cachedData = getCachedData();
-      if (cachedData) {
-        setPrayerTimes(cachedData.timings);
-        setHijriDate(cachedData.hijriDate);
-        setIsLoading(false);
-        setIsOffline(false);
-        return;
-      }
+	// Handle location change
+	const handleLocationChange = (cityId) => {
+		const newLocation = cities.find((city) => city.id === parseInt(cityId));
+		if (newLocation) {
+			setSelectedLocation(newLocation);
+			setCachedLocation(newLocation);
+			// Clear existing prayer times cache when location changes
+			localStorage.removeItem('prayerTimesCache');
+		}
+	};
 
-      // Fetch from API
-      const response = await fetch(
-        `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}&method=8`
-      );
-      if (!response.ok) throw new Error("Network response was not ok");
+	// Handle custom jamaat settings change
+	const handleJamaatSettingsChange = (newOffsets) => {
+		setJamaatOffsets(newOffsets);
+	};
 
-      const data = await response.json();
-      const hijriInfo = {
-        day: data.data.date.hijri.day,
-        month: data.data.date.hijri.month.en,
-        year: data.data.date.hijri.year,
-        abbreviated: data.data.date.hijri.designation.abbreviated,
-      };
+	// Handle editing individual jamaat time
+	const handleEditJamaat = (prayerName) => {
+		// Set the selected prayer for individual editing
+		setSelectedJamaatPrayer(prayerName);
+		// Open the jamaat settings modal
+		setShowJamaatSettings(true);
+	};
 
-      // Cache the data
-      setCachedData({
-        timings: data.data.timings,
-        hijriDate: hijriInfo,
-      });
+	// Handle jamaat settings modal close
+	const handleJamaatSettingsClose = () => {
+		setShowJamaatSettings(false);
+		// Reset selected prayer when closing modal
+		setSelectedJamaatPrayer(null);
+	};
 
-      setHijriDate(hijriInfo);
-      setPrayerTimes(data.data.timings);
-      setIsLoading(false);
-      setIsOffline(false);
-    } catch (error) {
-      console.error("Error fetching prayer times:", error);
+	// Fetch prayer times with selected location
+	const fetchPrayerTimes = useCallback(async () => {
+		if (!selectedLocation) return;
 
-      // Try to use cached data even if expired
-      const cachedData = getCachedData();
-      if (cachedData) {
-        setPrayerTimes(cachedData.timings);
-        setHijriDate(cachedData.hijriDate);
-        setIsOffline(true);
-      }
-      setIsLoading(false);
-    }
-  }, [selectedLocation, timestamp]);
+		try {
+			setIsLoading(true);
 
-  // Timer effect
-  useEffect(() => {
-    if (!prayerTimes) return;
+			// Check cache first
+			const cachedData = getCachedData();
+			if (cachedData) {
+				setPrayerTimes(cachedData.timings);
+				setHijriDate(cachedData.hijriDate);
+				setIsLoading(false);
+				setIsOffline(false);
+				return;
+			}
 
-    const updateTimer = () => {
-      const currentTime = getCurrentTime();
-      const { nextPrayerTime, currentPrayer } = getNextPrayerTime(
-        currentTime,
-        prayerTimes
-      );
+			// Fetch from API
+			const response = await fetch(
+				`https://api.aladhan.com/v1/timings/${timestamp}?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}&method=8`
+			);
+			if (!response.ok) throw new Error('Network response was not ok');
 
-      if (nextPrayerTime) {
-        const timeDiff = nextPrayerTime.getTime() - currentTime.getTime();
-        setRemainingTime(timeDiff);
-        setPrayerName(currentPrayer);
-      }
-    };
+			const data = await response.json();
+			const hijriInfo = {
+				day: data.data.date.hijri.day,
+				month: data.data.date.hijri.month.en,
+				year: data.data.date.hijri.year,
+				abbreviated: data.data.date.hijri.designation.abbreviated,
+			};
 
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
-  }, [prayerTimes]);
+			// Cache the data
+			setCachedData({
+				timings: data.data.timings,
+				hijriDate: hijriInfo,
+			});
 
-  // Fetch prayer times when location changes
-  useEffect(() => {
-    if (selectedLocation) {
-      fetchPrayerTimes();
-    }
-  }, [selectedLocation, fetchPrayerTimes]);
+			setHijriDate(hijriInfo);
+			setPrayerTimes(data.data.timings);
+			setIsLoading(false);
+			setIsOffline(false);
+		} catch (error) {
+			console.error('Error fetching prayer times:', error);
 
-  // Network status listener
-  useEffect(() => {
-    const handleOnline = () => setIsOffline(false);
-    const handleOffline = () => setIsOffline(true);
+			// Try to use cached data even if expired
+			const cachedData = getCachedData();
+			if (cachedData) {
+				setPrayerTimes(cachedData.timings);
+				setHijriDate(cachedData.hijriDate);
+				setIsOffline(true);
+			}
+			setIsLoading(false);
+		}
+	}, [selectedLocation, timestamp]);
 
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+	// Timer effect for both prayer and jamaat times
+	useEffect(() => {
+		if (!prayerTimes) return;
 
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
+		const updateTimer = () => {
+			const currentTime = getCurrentTime();
 
-  if (isLoading) {
-    return (
-      <div className="load">
-        <div>
-          <ThreeCircles
-            height="100"
-            width="100"
-            color="#d2a4db"
-            visible={true}
-          />
-        </div>
-      </div>
-    );
-  }
+			// Update prayer timer
+			const { nextPrayerTime, currentPrayer } = getNextPrayerTime(
+				currentTime,
+				prayerTimes
+			);
 
-  if (!prayerTimes) {
-    return (
-      <div className="load">
-        <p>
-          Unable to load prayer times. Please check your internet connection.
-        </p>
-        <button onClick={fetchPrayerTimes} className="retry-button">
-          Retry
-        </button>
-      </div>
-    );
-  }
+			if (nextPrayerTime) {
+				const timeDiff = nextPrayerTime.getTime() - currentTime.getTime();
+				setRemainingTime(timeDiff);
+				setPrayerName(currentPrayer);
+			}
 
-  return (
-    <div className="container">
-      {isOffline && (
-        <div
-          style={{
-            backgroundColor: "#ffeaa7",
-            color: "#2d3436",
-            padding: "10px",
-            textAlign: "center",
-            fontSize: "14px",
-          }}
-        >
-          You're offline. Showing cached prayer times.
-        </div>
-      )}
+			// Update jamaat timer if mosque is selected
+			if (jamaatTimes) {
+				const {
+					nextJamaatTime,
+					currentJamaat: currentJamaatPrayer,
+					prayerName: nextJamaatPrayer,
+				} = getNextJamaatTime(currentTime, jamaatTimes, prayerTimes);
 
-      <div className="header">
-        <svg className="location-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-        </svg>
-        <LocationDropdown
-          selectedLocation={selectedLocation}
-          onLocationChange={handleLocationChange}
-          cities={cities}
-        />
-      </div>
+				if (nextJamaatTime) {
+					const jamaatTimeDiff =
+						nextJamaatTime.getTime() - currentTime.getTime();
+					setJamaatRemainingTime(jamaatTimeDiff);
+					setJamaatPrayerName(nextJamaatPrayer);
+					setCurrentJamaat(currentJamaatPrayer);
+				}
+			}
+		};
 
-      <div className="time-hero-section">
-        <div className="time-display">
-          <div className="current-time">
-            {prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
-          </div>
-          <div className="time-info">
-            ends in
-            <span>{formatTime(remainingTime)}</span>{" "}
-          </div>
-        </div>
-        <img src="/logo1.png" alt="" />
-      </div>
+		updateTimer();
+		const interval = setInterval(updateTimer, 1000);
+		return () => clearInterval(interval);
+	}, [prayerTimes, jamaatTimes]);
 
-      <div className="date-section">
-        <div className="date-label">DATE ────────</div>
-        <div className="islamic-date">
-          {hijriDate &&
-            `${hijriDate.month} ${hijriDate.day}, ${hijriDate.year} ${hijriDate.abbreviated}`}
-        </div>
-        <div className="gregorian-date">
-          {currentDate.toLocaleDateString("en-US", {
-            weekday: "short",
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })}
-        </div>
-      </div>
+	// Fetch prayer times when location changes
+	useEffect(() => {
+		if (selectedLocation) {
+			fetchPrayerTimes();
+		}
+	}, [selectedLocation, fetchPrayerTimes]);
 
-      <PrayerList
-        prayerTimes={prayerTimes}
-        prayerName={prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
-      />
-      <Footer />
-    </div>
-  );
+	// Network status listener
+	useEffect(() => {
+		const handleOnline = () => setIsOffline(false);
+		const handleOffline = () => setIsOffline(true);
+
+		window.addEventListener('online', handleOnline);
+		window.addEventListener('offline', handleOffline);
+
+		return () => {
+			window.removeEventListener('online', handleOnline);
+			window.removeEventListener('offline', handleOffline);
+		};
+	}, []);
+
+	if (isLoading) {
+		return (
+			<div className='load'>
+				<div>
+					<ThreeCircles
+						height='100'
+						width='100'
+						color='#d2a4db'
+						visible={true}
+					/>
+				</div>
+			</div>
+		);
+	}
+
+	if (!prayerTimes) {
+		return (
+			<div className='load'>
+				<p>
+					Unable to load prayer times. Please check your internet connection.
+				</p>
+				<button onClick={fetchPrayerTimes} className='retry-button'>
+					Retry
+				</button>
+			</div>
+		);
+	}
+
+	return (
+		<div className='container'>
+			{isOffline && (
+				<div
+					style={{
+						backgroundColor: '#ffeaa7',
+						color: '#2d3436',
+						padding: '10px',
+						textAlign: 'center',
+						fontSize: '14px',
+					}}
+				>
+					You're offline. Showing cached prayer times.
+				</div>
+			)}
+
+			<div className='header'>
+				<svg className='location-icon' viewBox='0 0 24 24' fill='currentColor'>
+					<path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z' />
+				</svg>
+				<LocationDropdown
+					selectedLocation={selectedLocation}
+					onLocationChange={handleLocationChange}
+					cities={cities}
+				/>
+
+				<div className='header-actions'>
+					<button
+						onClick={() => setShowSettings(true)}
+						className='settings-button'
+						title='Notification Settings'
+					>
+						<FaCog size={14} />
+					</button>
+				</div>
+			</div>
+
+			<div className='time-hero-section'>
+				<div className='time-display'>
+					<div className='current-time'>
+						{showJamaatView && jamaatPrayerName
+							? `${
+									jamaatPrayerName == 'Sunrise'
+										? 'Salatud Doha'
+										: jamaatPrayerName
+							  } Jamaat`
+							: `${prayerName == 'Sunrise' ? 'Salatud Doha' : prayerName}`}
+					</div>
+					<div className='time-info'>
+						{showJamaatView && jamaatRemainingTime ? (
+							<>
+								starts in <span>{formatTime(jamaatRemainingTime)}</span>
+							</>
+						) : (
+							<>
+								ends in <span>{formatTime(remainingTime)}</span>
+							</>
+						)}
+					</div>
+				</div>
+				<img src='/logo1.png' alt='' />
+			</div>
+
+			{/* View Toggle */}
+			{jamaatOffsets && (
+				<div className='view-toggle'>
+					<button
+						className={`toggle-btn ${!showJamaatView ? 'active' : ''}`}
+						onClick={() => setShowJamaatView(false)}
+					>
+						Prayer Times
+					</button>
+					<button
+						className={`toggle-btn ${showJamaatView ? 'active' : ''}`}
+						onClick={() => setShowJamaatView(true)}
+					>
+						<FaMosque size={12} />
+						Jamaat Times
+					</button>
+				</div>
+			)}
+
+			<div className='date-section'>
+				<div className='date-label'>DATE ────────</div>
+				<div className='islamic-date'>
+					{hijriDate &&
+						`${hijriDate.month} ${hijriDate.day}, ${hijriDate.year} ${hijriDate.abbreviated}`}
+				</div>
+				<div className='gregorian-date'>
+					{currentDate.toLocaleDateString('en-US', {
+						weekday: 'short',
+						day: '2-digit',
+						month: 'short',
+						year: 'numeric',
+					})}
+				</div>
+			</div>
+
+			{/* Conditional Content Based on View */}
+			{showJamaatView ? (
+				<JamaatList
+					prayerTimes={prayerTimes}
+					jamaatTimes={jamaatTimes}
+					currentPrayer={prayerName}
+					currentJamaat={currentJamaat}
+					jamaatOffsets={jamaatOffsets}
+					locationName={selectedLocation?.name}
+					onEditJamaat={handleEditJamaat}
+				/>
+			) : (
+				<PrayerList
+					prayerTimes={prayerTimes}
+					prayerName={prayerName == 'Sunrise' ? 'Salatud Doha' : prayerName}
+				/>
+			)}
+
+			<Footer />
+
+			{/* Settings Modal */}
+			<Settings
+				isOpen={showSettings}
+				onClose={() => setShowSettings(false)}
+				onSettingsChange={(settings) => {
+					console.log('Settings updated:', settings);
+				}}
+				onJamaatSettings={() => {
+					setSelectedJamaatPrayer(null); // Reset for general editing
+					setShowJamaatSettings(true);
+				}}
+			/>
+
+			{/* Custom Jamaat Settings Modal */}
+			<CustomJamaatSettings
+				isOpen={showJamaatSettings}
+				onClose={handleJamaatSettingsClose}
+				onSave={handleJamaatSettingsChange}
+				initialOffsets={jamaatOffsets}
+				prayerTimes={prayerTimes}
+				selectedPrayer={selectedJamaatPrayer}
+			/>
+		</div>
+	);
 }
 
 export default App;

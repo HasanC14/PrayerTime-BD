@@ -1,345 +1,1837 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 :root {
-  --primary-text-color: #170939;
-  --secondary-text-color: #6f6885;
+	--primary-text-color: #170939;
+	--secondary-text-color: #6f6885;
 }
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 body {
-  font-family: "Inter", sans-serif;
-  width: 380px;
-  height: 600px;
-  background: linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%);
-  color: var(--primary-text-color);
+	font-family: 'Inter', sans-serif;
+	width: 360px; /* Reduced from 380px */
+	height: 550px; /* Reduced from 600px */
+	background: linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%);
+	color: var(--primary-text-color);
 }
 
 .container {
-  padding: 18px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+	padding: 12px; /* Reduced from 18px */
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-  color: var(--primary-text-color);
-  font-size: 12px;
-  font-weight: 500;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-bottom: 6px; /* Reduced from 8px */
+	color: var(--primary-text-color);
+	font-size: 11px; /* Reduced from 12px */
+	font-weight: 500;
+	justify-content: space-between;
 }
 
-.location-icon {
-  width: 16px;
-  height: 16px;
+.header-actions {
+	display: flex;
+	gap: 8px;
 }
 
-.time-hero-section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
-.time-hero-section img {
-  /* width: 100px; */
-  height: 120px;
-  /* background-color: #d7bedc;
-  mix-blend-mode: darken; */
-}
-.time-display {
-  flex: 1;
+.settings-button {
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 6px;
+	padding: 6px;
+	color: var(--primary-text-color);
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.current-time {
-  font-size: 44px;
-  font-weight: 600;
+.settings-button:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.5);
 }
 
-.time-info {
-  color: var(--secondary-text-color);
-  font-size: 14px;
+/* Mosque Section */
+.mosque-section {
+	margin-bottom: 12px;
+	padding: 8px 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.time-info span {
-  font-weight: 700;
+
+/* Mosque Dropdown Styles */
+.mosque-dropdown {
+	position: relative;
+	display: inline-block;
+	width: 100%;
+}
+
+.mosque-dropdown-disabled {
+	opacity: 0.6;
+}
+
+.mosque-dropdown .dropdown-trigger {
+	width: 100%;
+	min-height: 36px;
+	justify-content: flex-start;
+}
+
+.mosque-dropdown .dropdown-trigger.disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
 }
 
 .mosque-icon {
-  width: 60px;
-  height: 50px;
-  opacity: 0.4;
+	margin-right: 8px;
+	opacity: 0.8;
+}
+
+.mosque-name {
+	flex: 1;
+	text-align: left;
+	font-size: 12px;
+}
+
+.mosque-menu {
+	min-width: 100%;
+	max-width: 100%;
+}
+
+.mosque-list {
+	max-height: 120px;
+}
+
+.mosque-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 12px;
+}
+
+.mosque-info {
+	flex: 1;
+}
+
+.mosque-name-item {
+	font-weight: 500;
+	font-size: 13px;
+	margin-bottom: 2px;
+}
+
+.mosque-address {
+	font-size: 11px;
+	opacity: 0.7;
+}
+
+.jamaat-info {
+	margin-left: 8px;
+}
+
+.jamaat-label {
+	font-size: 10px;
+	background: rgba(255, 255, 255, 0.2);
+	padding: 2px 6px;
+	border-radius: 10px;
+	opacity: 0.8;
+}
+
+/* View Toggle */
+.view-toggle {
+	display: flex;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 10px; /* Reduced from 12px */
+	padding: 3px; /* Reduced from 4px */
+	margin-bottom: 12px; /* Reduced from 16px */
+	gap: 2px;
+}
+
+.toggle-btn {
+	flex: 1;
+	padding: 6px 10px; /* Reduced from 8px 12px */
+	border: none;
+	background: transparent;
+	color: var(--primary-text-color);
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 11px; /* Reduced from 12px */
+	font-weight: 500;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
+.toggle-btn.active {
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-btn:hover:not(.active) {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+/* Jamaat Times Styles */
+.jamaat-times {
+	flex: 1;
+}
+
+.jamaat-times-placeholder {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+	flex: 1;
+}
+
+.placeholder-content {
+	text-align: center;
+	color: var(--secondary-text-color);
+}
+
+.placeholder-icon {
+	margin-bottom: 8px;
+	opacity: 0.5;
+}
+
+.jamaat-header {
+	margin-bottom: 16px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mosque-info-header {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	margin-bottom: 6px;
+}
+
+.jamaat-legend {
+	display: flex;
+	gap: 16px;
+	font-size: 10px;
+	opacity: 0.7;
+}
+
+.legend-item {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.jamaat-item {
+	display: flex;
+	align-items: flex-start;
+	background: rgba(255, 255, 255, 0.4);
+	border-radius: 16px;
+	padding: 12px;
+	backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	margin-bottom: 10px;
+}
+
+.jamaat-item.active {
+	background: linear-gradient(220deg, #d7bedc 0%, #ecdfee 100%);
+	box-shadow: 0px 24px 26px -7px rgba(194, 194, 194, 0.72);
+}
+
+.jamaat-item.jamaat-active {
+	background: linear-gradient(220deg, #c2e9fb 0%, #a1c4fd 100%);
+}
+
+.jamaat-info {
+	flex: 1;
+	margin-left: 12px;
+}
+
+.prayer-name-section {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.jamaat-status {
+	font-size: 10px;
+	background: rgba(33, 150, 243, 0.2);
+	color: #1976d2;
+	padding: 2px 6px;
+	border-radius: 8px;
+	font-weight: 500;
+}
+
+.times-section {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.time-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+}
+
+.time-icon {
+	opacity: 0.6;
+}
+
+.time-label {
+	font-size: 11px;
+	opacity: 0.8;
+	min-width: 40px;
+}
+
+.time-value {
+	font-weight: 500;
+}
+
+.offset-indicator {
+	font-size: 10px;
+	background: rgba(255, 255, 255, 0.3);
+	padding: 1px 4px;
+	border-radius: 6px;
+	margin-left: 4px;
+	opacity: 0.8;
+}
+
+/* Jamaat Time Section with Edit Button */
+.jamaat-time-section {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.jamaat-edit-btn-small {
+	background: rgba(255, 255, 255, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 6px;
+	padding: 4px;
+	color: var(--primary-text-color);
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 12px;
+	min-width: 24px;
+	height: 24px;
+}
+
+.jamaat-edit-btn-small:hover {
+	background: rgba(255, 255, 255, 0.5);
+	border-color: rgba(255, 255, 255, 0.4);
+	transform: scale(1.05);
+}
+
+/* Modern Jamaat Card Design */
+.jamaat-card-modern {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: rgba(255, 255, 255, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 12px !important;
+	padding: 2px 10px;
+	margin-bottom: 0px;
+	backdrop-filter: blur(20px);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+}
+
+.jamaat-card-modern::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.1) 0%,
+		rgba(255, 255, 255, 0.05) 100%
+	);
+	border-radius: 18px;
+	z-index: -1;
+}
+
+.jamaat-card-modern:hover {
+	transform: translateY(-2px);
+	background: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.jamaat-card-modern.active {
+	background: linear-gradient(
+		135deg,
+		rgba(139, 92, 246, 0.2) 0%,
+		rgba(168, 85, 247, 0.15) 100%
+	) !important;
+	border-color: rgba(139, 92, 246, 0.4) !important;
+	box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2),
+		inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.jamaat-card-modern.jamaat-active {
+	background: linear-gradient(
+		135deg,
+		rgba(194, 233, 251, 0.4) 0%,
+		rgba(161, 196, 253, 0.4) 100%
+	);
+	border-color: rgba(161, 196, 253, 0.5);
+	box-shadow: 0 8px 32px rgba(161, 196, 253, 0.4);
+}
+
+/* Prayer Section */
+.prayer-section {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.prayer-icon-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+}
+
+.prayer-icon-modern {
+	width: 20px;
+	height: 20px;
+	opacity: 0.9;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.prayer-details {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.prayer-name-modern {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--primary-text-color);
+	margin: 0;
+	letter-spacing: -0.02em;
+}
+
+.jamaat-status-modern {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 11px;
+	color: #1976d2;
+	font-weight: 500;
+}
+
+.pulse-dot {
+	color: #4caf50;
+	animation: pulse 2s infinite;
+	font-size: 8px;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+/* Time Display Section */
+.time-display-section {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.jamaat-time-main {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 2px;
+}
+
+.time-value-modern {
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--primary-text-color);
+	letter-spacing: -0.02em;
+}
+
+.time-label-modern {
+	font-size: 9px;
+	font-weight: 500;
+	color: var(--secondary-text-color);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	opacity: 0.8;
+}
+
+/* Modern Edit Button */
+.edit-btn-modern {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	background: rgba(255, 255, 255, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 12px;
+	color: var(--primary-text-color);
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	backdrop-filter: blur(10px);
+	font-size: 12px;
+}
+
+.edit-btn-modern:hover {
+	background: rgba(255, 255, 255, 0.25);
+	border-color: rgba(255, 255, 255, 0.2);
+	transform: scale(1.05);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.edit-btn-modern:active {
+	transform: scale(0.98);
+}
+
+.jamaat-footer {
+	margin-top: 16px;
+	padding-top: 8px;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	text-align: center;
+}
+
+.mosque-address {
+	font-size: 11px;
+	opacity: 0.7;
+	font-style: italic;
+}
+
+/* Settings Modal Styles */
+.settings-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	padding: 20px;
+}
+
+.settings-modal {
+	background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+	border-radius: 16px;
+	width: 100%;
+	max-width: 380px;
+	max-height: 90vh;
+	overflow: hidden;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.settings-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	background: rgba(255, 255, 255, 0.2);
+}
+
+.settings-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: 600;
+	color: var(--primary-text-color);
+}
+
+.close-button {
+	background: none;
+	border: none;
+	color: var(--primary-text-color);
+	cursor: pointer;
+	padding: 4px;
+	border-radius: 4px;
+	transition: background-color 0.2s ease;
+}
+
+.close-button:hover {
+	background: rgba(0, 0, 0, 0.1);
+}
+
+.settings-content {
+	padding: 20px;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.setting-section {
+	margin-bottom: 24px;
+}
+
+.section-title {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--primary-text-color);
+	margin-bottom: 12px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.setting-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.setting-item:last-child {
+	border-bottom: none;
+}
+
+.master-setting {
+	background: rgba(255, 255, 255, 0.3);
+	padding: 16px;
+	border-radius: 12px;
+	border: none;
+}
+
+.setting-info {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex: 1;
+}
+
+.setting-label {
+	font-weight: 500;
+	color: var(--primary-text-color);
+	font-size: 14px;
+}
+
+.setting-description {
+	font-size: 12px;
+	color: var(--secondary-text-color);
+	margin-top: 2px;
+}
+
+.toggle-switch {
+	position: relative;
+	display: inline-block;
+	width: 44px;
+	height: 24px;
+}
+
+.toggle-switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.toggle-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	transition: 0.3s;
+	border-radius: 24px;
+}
+
+.toggle-slider:before {
+	position: absolute;
+	content: '';
+	height: 18px;
+	width: 18px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	transition: 0.3s;
+	border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+	background-color: #4caf50;
+}
+
+input:disabled + .toggle-slider {
+	background-color: #e0e0e0;
+	cursor: not-allowed;
+}
+
+input:checked + .toggle-slider:before {
+	transform: translateX(20px);
+}
+
+.time-select {
+	padding: 6px 8px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.5);
+	color: var(--primary-text-color);
+	font-size: 12px;
+	min-width: 90px;
+}
+
+.time-select:disabled {
+	background: rgba(0, 0, 0, 0.1);
+	color: rgba(0, 0, 0, 0.4);
+	cursor: not-allowed;
+}
+
+.test-button {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	width: 100%;
+}
+
+.test-button:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.test-button:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.jamaat-settings-button {
+	background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+	color: white;
+	border: none;
+	border-radius: 10px;
+	padding: 10px 16px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.jamaat-settings-button:hover {
+	background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.settings-footer {
+	display: flex;
+	gap: 12px;
+	padding: 16px 20px;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.cancel-button {
+	flex: 1;
+	padding: 10px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	background: transparent;
+	color: var(--primary-text-color);
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 12px;
+	transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+	background: rgba(0, 0, 0, 0.05);
+}
+
+.save-button {
+	flex: 1;
+	padding: 10px;
+	border: none;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	transition: all 0.2s ease;
+}
+
+.save-button:disabled {
+	background: #ccc;
+	cursor: not-allowed;
+}
+
+.save-button.has-changes:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.location-icon {
+	width: 16px;
+	height: 16px;
+}
+
+.time-hero-section {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 12px; /* Reduced from 15px */
+}
+.time-hero-section img {
+	/* width: 100px; */
+	height: 100px; /* Reduced from 120px */
+	/* background-color: #d7bedc;
+  mix-blend-mode: darken; */
+}
+.time-display {
+	flex: 1;
+}
+
+.current-time {
+	font-size: 38px; /* Reduced from 44px */
+	font-weight: 600;
+}
+
+.time-info {
+	color: var(--secondary-text-color);
+	font-size: 14px;
+}
+.time-info span {
+	font-weight: 700;
+}
+
+.mosque-icon {
+	width: 60px;
+	height: 50px;
+	opacity: 0.4;
 }
 
 .date-section {
-  margin-bottom: 20px;
+	margin-bottom: 14px; /* Reduced from 20px */
 }
 
 .date-label {
-  color: var(--secondary-text-color);
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 8px;
+	color: var(--secondary-text-color);
+	font-size: 11px; /* Reduced from 12px */
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.8px;
+	margin-bottom: 6px; /* Reduced from 8px */
 }
 
 .islamic-date {
-  color: var(--primary-text-color);
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 4px;
+	color: var(--primary-text-color);
+	font-size: 16px; /* Reduced from 18px */
+	font-weight: 600;
+	margin-bottom: 3px; /* Reduced from 4px */
 }
 
 .gregorian-date {
-  color: var(--secondary-text-color);
-  font-size: 12px;
+	color: var(--secondary-text-color);
+	font-size: 11px; /* Reduced from 12px */
 }
 
 .prayer-times {
-  flex: 1;
+	flex: 1;
 }
 
 .prayer-item {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 16px;
-  padding: 12px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+	display: flex;
+	align-items: center;
+	background: rgba(255, 255, 255, 0.4);
+	border-radius: 16px;
+	padding: 12px;
+	backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .prayer-item:not(:last-child) {
-  margin-bottom: 10px;
+	margin-bottom: 10px;
 }
 .prayer-item.active {
-  /* scale: 104%; */
-  background: linear-gradient(220deg, #d7bedc 0%, #ecdfee 100%);
-  -webkit-box-shadow: 0px 24px 26px -7px rgba(194, 194, 194, 0.72);
-  -moz-box-shadow: 0px 24px 26px -7px rgba(194, 194, 194, 0.72);
+	/* scale: 104%; */
+	background: linear-gradient(220deg, #d7bedc 0%, #ecdfee 100%);
+	box-shadow: 0px 24px 26px -7px rgba(194, 194, 194, 0.72);
 }
 
 .prayer-item:last-child {
-  border-bottom: none;
+	border-bottom: none;
 }
 
 .prayer-icon {
-  display: flex;
-  align-items: center;
-  /* width: 24px;
+	display: flex;
+	align-items: center;
+	/* width: 24px;
   height: 24px; */
-  margin-right: 12px;
-  opacity: 0.7;
+	margin-right: 12px;
+	opacity: 0.7;
 }
 
 .prayer-info {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	flex: 1;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .prayer-name {
-  color: var(--primary-text-color);
-  font-size: 16px;
-  font-weight: 600;
+	color: var(--primary-text-color);
+	font-size: 16px;
+	font-weight: 600;
 }
 
 .prayer-time {
-  color: var(--secondary-text-color);
-  font-size: 14px;
-  font-weight: 500;
+	color: var(--secondary-text-color);
+	font-size: 14px;
+	font-weight: 500;
 }
 
 .sound-icon {
-  width: 20px;
-  height: 20px;
-  margin-left: 8px;
-  opacity: 0.5;
+	width: 20px;
+	height: 20px;
+	margin-left: 8px;
+	opacity: 0.5;
 }
 .footer a {
-  margin-right: 10px;
-  text-decoration: none;
-  color: var(--primary-text-color);
-  font-size: 18px;
+	margin-right: 8px; /* Reduced from 10px */
+	text-decoration: none;
+	color: var(--primary-text-color);
+	font-size: 16px; /* Reduced from 18px */
 }
 .footer a:hover {
-  scale: 110%;
-  transition: all 700ms ease-in-out;
+	scale: 110%;
+	transition: all 700ms ease-in-out;
 }
 .footer {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+	margin-top: 12px; /* Reduced from 20px */
+	display: flex;
+	justify-content: flex-end;
 }
 .load {
-  display: flex;
-  gap: 12px;
-  flex-direction: column;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+	display: flex;
+	gap: 12px;
+	flex-direction: column;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
 }
 
 .retry-button {
-  padding: 8px 16px;
-  background: linear-gradient(220deg, #d2a4db 0%, #ebd7ee 100%);
-  color: var(--primary-text-color);
-  border: none;
-  font-family: inherit;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
+	padding: 8px 16px;
+	background: linear-gradient(220deg, #d2a4db 0%, #ebd7ee 100%);
+	color: var(--primary-text-color);
+	border: none;
+	font-family: inherit;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
 }
 
 /* Location Dropdown Styles */
 .location-dropdown {
-  position: relative;
-  display: inline-block;
+	position: relative;
+	display: inline-block;
 }
 
 .dropdown-trigger {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-  font-size: inherit;
-  color: inherit;
-  background: transparent;
-  border: 1px solid #d7b2df;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	padding: 4px 8px;
+	border-radius: 6px;
+	transition: background-color 0.2s ease;
+	font-size: inherit;
+	color: inherit;
+	background: transparent;
+	border: 1px solid #d7b2df;
 }
 
 .dropdown-trigger:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(255, 255, 255, 0.1);
 }
 
 .dropdown-arrow {
-  transition: transform 0.2s ease;
-  opacity: 0.7;
+	transition: transform 0.2s ease;
+	opacity: 0.7;
 }
 
 .dropdown-arrow.open {
-  transform: rotate(180deg);
+	transform: rotate(180deg);
 }
 
 .dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  margin-top: 4px;
-  overflow: hidden;
-  min-width: 170px;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(10px);
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	z-index: 1000;
+	margin-top: 4px;
+	overflow: hidden;
+	min-width: 170px;
 }
 
 .search-container {
-  position: relative;
-  /* padding: 12px; */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  background: rgba(248, 250, 252, 0.8);
+	position: relative;
+	/* padding: 12px; */
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	background: rgba(248, 250, 252, 0.8);
 }
 
 .search-icon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary-text-color);
-  pointer-events: none;
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--primary-text-color);
+	pointer-events: none;
 }
 
 .search-input {
-  width: 100%;
-  padding: 8px 8px 8px 32px;
-  /* border: 1px solid var(--primary-text-color); */
-  /* border-radius: 6px; */
-  font-size: 14px;
-  background: linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%);
-  color: #334155;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	width: 100%;
+	padding: 8px 8px 8px 32px;
+	/* border: 1px solid var(--primary-text-color); */
+	/* border-radius: 6px; */
+	font-size: 14px;
+	background: linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%);
+	color: #334155;
+	outline: none;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-input:focus {
-  border: none;
-  /* border-color: var(--secondary-text-color); */
-  /* box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); */
+	border: none;
+	/* border-color: var(--secondary-text-color); */
+	/* box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); */
 }
 
 .search-input::placeholder {
-  color: var(--primary-text-color);
-  font-family: "Inter", sans-serif;
+	color: var(--primary-text-color);
+	font-family: 'Inter', sans-serif;
 }
 
 .dropdown-list {
-  max-height: 135px;
-  overflow-y: auto;
-  background: linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%);
+	max-height: 135px;
+	overflow-y: auto;
+	background: linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%);
 }
 
 .dropdown-item {
-  padding: 10px 12px;
-  cursor: pointer;
-  color: var(--primary-text-color);
-  font-size: 14px;
-  transition: background-color 0.15s ease;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+	padding: 10px 12px;
+	cursor: pointer;
+	color: var(--primary-text-color);
+	font-size: 14px;
+	transition: background-color 0.15s ease;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.02);
 }
 
 .dropdown-item:last-child {
-  border-bottom: none;
+	border-bottom: none;
 }
 
 .dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.4);
+	background: rgba(255, 255, 255, 0.4);
 }
 
 .dropdown-item.selected {
-  background-color: #eff6ff;
-  color: var(--primary-text-color);
-  background: rgba(255, 255, 255, 0.4);
-  font-weight: 500;
+	background-color: #eff6ff;
+	color: var(--primary-text-color);
+	background: rgba(255, 255, 255, 0.4);
+	font-weight: 500;
 }
 
 .dropdown-item.no-results {
-  color: var(--primary-text-color);
-  font-style: italic;
-  cursor: default;
-  padding: 16px;
-  text-align: center;
+	color: var(--primary-text-color);
+	font-style: italic;
+	cursor: default;
+	padding: 16px;
+	text-align: center;
 }
 
 .dropdown-item.no-results:hover {
-  background-color: transparent;
+	background-color: transparent;
 }
 
 /* Custom scrollbar for the dropdown list */
 .dropdown-list::-webkit-scrollbar {
-  width: 6px;
+	width: 6px;
 }
 
 .dropdown-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
+	background: rgba(0, 0, 0, 0.05);
 }
 
 .dropdown-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 3px;
 }
 
 .dropdown-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+	background: rgba(0, 0, 0, 0.3);
+}
+
+/* Jamaat Section */
+.jamaat-section {
+	margin-bottom: 12px;
+	padding: 8px 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Jamaat Time Card Styles */
+.jamaat-card {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.25) 0%,
+		rgba(255, 255, 255, 0.15) 100%
+	);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 16px;
+	padding: 16px;
+	margin-bottom: 12px;
+	backdrop-filter: blur(12px);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	transition: all 0.3s ease;
+}
+
+.jamaat-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	border-color: rgba(139, 92, 246, 0.4);
+}
+
+.jamaat-card-empty {
+	text-align: center;
+	padding: 24px 16px;
+	color: var(--secondary-text-color);
+}
+
+.jamaat-card-empty .jamaat-icon {
+	margin-bottom: 12px;
+	opacity: 0.7;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.jamaat-card-empty p {
+	font-size: 13px;
+	margin-bottom: 18px;
+	line-height: 1.5;
+	font-weight: 500;
+	text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.jamaat-setup-btn {
+	background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+	color: white;
+	border: none;
+	border-radius: 12px;
+	padding: 12px 24px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	position: relative;
+	overflow: hidden;
+}
+
+.jamaat-setup-btn::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.3),
+		transparent
+	);
+	transition: left 0.5s ease;
+}
+
+.jamaat-setup-btn:hover::before {
+	left: 100%;
+}
+
+.jamaat-setup-btn:hover {
+	background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.jamaat-setup-btn:active {
+	transform: translateY(0);
+	box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.jamaat-card-preview {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+}
+
+.jamaat-preview-info h4 {
+	font-size: 14px;
+	font-weight: 700;
+	margin-bottom: 6px;
+	color: var(--primary-text-color);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.jamaat-preview-info p {
+	font-size: 12px;
+	color: var(--secondary-text-color);
+	line-height: 1.4;
+	font-weight: 500;
+}
+
+.jamaat-times-preview {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-top: 6px;
+}
+
+.jamaat-time-item {
+	font-size: 11px;
+	color: var(--primary-text-color);
+	font-weight: 500;
+	padding: 2px 6px;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 6px;
+	display: inline-block;
+}
+
+.jamaat-edit-btn {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.4) 0%,
+		rgba(255, 255, 255, 0.2) 100%
+	);
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	border-radius: 10px;
+	padding: 8px 16px;
+	color: var(--primary-text-color);
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: 600;
+	transition: all 0.2s ease;
+	backdrop-filter: blur(8px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.jamaat-edit-btn:hover {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.6) 0%,
+		rgba(255, 255, 255, 0.4) 100%
+	);
+	border-color: rgba(255, 255, 255, 0.5);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom Jamaat Settings Modal */
+.jamaat-settings-modal {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	padding: 20px;
+	backdrop-filter: blur(8px);
+}
+
+.jamaat-settings-content {
+	background: linear-gradient(135deg, #f8f4fa 0%, #f0e6f7 50%, #e8d8f0 100%);
+	border-radius: 20px;
+	padding: 28px;
+	width: 100%;
+	max-width: 360px;
+	max-height: 90vh;
+	overflow-y: auto;
+	box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+		0 0 0 1px rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9) translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+.jamaat-settings-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 16px;
+}
+
+.jamaat-settings-header h3 {
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--primary-text-color);
+	display: flex;
+	align-items: center;
+	margin: 0;
+	line-height: 1.3;
+}
+
+.jamaat-close-btn {
+	background: rgba(255, 255, 255, 0.4);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 8px;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	color: var(--secondary-text-color);
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.jamaat-close-btn:hover {
+	background: rgba(255, 255, 255, 0.6);
+	color: var(--primary-text-color);
+	transform: scale(1.05);
+}
+
+.jamaat-description {
+	font-size: 13px;
+	color: var(--secondary-text-color);
+	margin-bottom: 24px;
+	line-height: 1.5;
+	padding: 12px 16px;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.jamaat-settings-form {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.jamaat-input-group {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.jamaat-input-row {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 16px;
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.4) 0%,
+		rgba(255, 255, 255, 0.2) 100%
+	);
+	border-radius: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	transition: all 0.2s ease;
+	backdrop-filter: blur(10px);
+}
+
+.jamaat-input-row:hover {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.5) 0%,
+		rgba(255, 255, 255, 0.3) 100%
+	);
+	border-color: rgba(255, 255, 255, 0.4);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.jamaat-prayer-icon {
+	width: 24px;
+	height: 24px;
+	opacity: 0.9;
+	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+	flex-shrink: 0;
+}
+
+.jamaat-prayer-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.jamaat-prayer-label {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--primary-text-color);
+	text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.jamaat-prayer-time {
+	font-size: 11px;
+	font-weight: 500;
+	color: var(--secondary-text-color);
+	opacity: 0.8;
+}
+
+.jamaat-time-input-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 2px;
+}
+
+.jamaat-time-input {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.9) 0%,
+		rgba(255, 255, 255, 0.7) 100%
+	);
+	border: 2px solid rgba(255, 255, 255, 0.4);
+	border-radius: 10px;
+	padding: 8px 10px;
+	width: 100px;
+	text-align: center;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--primary-text-color);
+	transition: all 0.2s ease;
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.jamaat-time-input:focus {
+	outline: none;
+	border-color: #8b5cf6;
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.95) 0%,
+		rgba(255, 255, 255, 0.8) 100%
+	);
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1),
+		0 0 0 3px rgba(139, 92, 246, 0.1);
+	transform: scale(1.02);
+}
+
+.jamaat-time-input:hover {
+	border-color: rgba(139, 92, 246, 0.4);
+}
+
+.jamaat-time-label {
+	font-size: 10px;
+	font-weight: 600;
+	color: var(--secondary-text-color);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.jamaat-settings-actions {
+	display: flex;
+	gap: 12px;
+	margin-top: 24px;
+}
+
+.jamaat-action-btn {
+	flex: 1;
+	padding: 14px 20px;
+	border-radius: 12px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+	position: relative;
+	overflow: hidden;
+}
+
+.jamaat-action-btn::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.3),
+		transparent
+	);
+	transition: left 0.5s ease;
+}
+
+.jamaat-action-btn:hover::before {
+	left: 100%;
+}
+
+.jamaat-save-btn {
+	background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+	color: white;
+	box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.jamaat-save-btn:hover {
+	background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.jamaat-save-btn:active {
+	transform: translateY(0);
+	box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.jamaat-cancel-btn {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.6) 0%,
+		rgba(255, 255, 255, 0.4) 100%
+	);
+	color: var(--primary-text-color);
+	border: 2px solid rgba(255, 255, 255, 0.5);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.jamaat-cancel-btn:hover {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.8) 0%,
+		rgba(255, 255, 255, 0.6) 100%
+	);
+	border-color: rgba(255, 255, 255, 0.7);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================ */
+/* PRAYER LIST - PREMIUM MODERN DESIGN */
+/* ============================================ */
+
+/* Main Prayer Times Container */
+.prayer-times {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 8px !important; /* Reduced from 16px */
+	padding: 8px 10px !important; /* Reduced from 20px 16px */
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.1) 0%,
+		rgba(255, 255, 255, 0.05) 100%
+	) !important;
+	border-radius: 16px !important; /* Reduced from 24px */
+	backdrop-filter: blur(20px) !important;
+	border: 1px solid rgba(255, 255, 255, 0.2) !important;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+		inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+	/* Remove forced scrolling */
+	max-height: none !important;
+	overflow-y: visible !important;
+}
+
+/* Custom Scrollbar for Prayer Times */
+.prayer-times::-webkit-scrollbar {
+	width: 6px !important;
+}
+
+.prayer-times::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.1) !important;
+	border-radius: 10px !important;
+}
+
+.prayer-times::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, #8b5cf6, #a855f7) !important;
+	border-radius: 10px !important;
+	transition: background 0.3s ease !important;
+}
+
+.prayer-times::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, #7c3aed, #9333ea) !important;
+}
+
+/* Modern Prayer Card */
+.prayer-card-modern {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	padding: 2px 10px !important; /* Reduced from 16px 20px */
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.15) 0%,
+		rgba(255, 255, 255, 0.08) 100%
+	) !important;
+	border: 1px solid rgba(255, 255, 255, 0.2) !important;
+	border-radius: 12px !important; /* Reduced from 18px */
+	backdrop-filter: blur(25px) !important;
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	position: relative !important;
+	overflow: hidden !important;
+	cursor: pointer !important;
+	margin-bottom: 0 !important;
+}
+
+/* Hover Effects for Prayer Card */
+.prayer-card-modern:hover {
+	transform: translateY(-2px) scale(1.02) !important;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15),
+		inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+	border-color: rgba(139, 92, 246, 0.3) !important;
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.2) 0%,
+		rgba(255, 255, 255, 0.12) 100%
+	) !important;
+}
+
+/* Active State for Prayer Card */
+.prayer-card-modern.active {
+	background: linear-gradient(
+		135deg,
+		rgba(139, 92, 246, 0.2) 0%,
+		rgba(168, 85, 247, 0.15) 100%
+	) !important;
+	border-color: rgba(139, 92, 246, 0.4) !important;
+	box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2),
+		inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Shimmer Effect for Active Prayer Cards */
+.prayer-card-modern.active::before {
+	content: '' !important;
+	position: absolute !important;
+	top: 0 !important;
+	left: -100% !important;
+	width: 100% !important;
+	height: 100% !important;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.2),
+		transparent
+	) !important;
+	animation: shimmer 2s infinite !important;
+	z-index: 0 !important;
+}
+
+/* Prayer Section (Icon + Name) */
+.prayer-card-modern .prayer-section {
+	display: flex !important;
+	align-items: center !important;
+	gap: 12px !important;
+	flex: 1 !important;
+	z-index: 1 !important;
+	position: relative !important;
+}
+.jamaat-card-modern .prayer-icon-container {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 38px !important; /* Reduced from 44px */
+	height: 38px !important; /* Reduced from 44px */
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.2) 0%,
+		rgba(255, 255, 255, 0.1) 100%
+	) !important;
+	border: 1px solid rgba(255, 255, 255, 0.3) !important;
+	border-radius: 12px !important; /* Reduced from 14px */
+	backdrop-filter: blur(15px) !important;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1),
+		inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+/* Prayer Icon Container */
+.prayer-card-modern .prayer-icon-container {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 38px !important; /* Reduced from 44px */
+	height: 38px !important; /* Reduced from 44px */
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.2) 0%,
+		rgba(255, 255, 255, 0.1) 100%
+	) !important;
+	border: 1px solid rgba(255, 255, 255, 0.3) !important;
+	border-radius: 10px !important; /* Reduced from 12px */
+	backdrop-filter: blur(15px) !important;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1),
+		inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.prayer-card-modern:hover {
+	transform: translateY(-2px);
+	border-color: rgba(139, 92, 246, 0.4) !important;
+}
+
+/* Prayer Icon */
+.prayer-card-modern .prayer-icon-modern {
+	filter: brightness(1.2) contrast(1.1) !important;
+	transition: all 0.3s ease !important;
+}
+
+.prayer-card-modern:hover .prayer-icon-modern {
+	filter: brightness(1.4) contrast(1.2)
+		drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3)) !important;
+}
+
+/* Prayer Details */
+.prayer-card-modern .prayer-details {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 4px !important;
+}
+
+/* Prayer Name */
+.prayer-card-modern .prayer-name-modern {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+	font-size: 13px !important; /* Further reduced from 14px */
+	font-weight: 600 !important;
+	line-height: 1.1 !important; /* Reduced from 1.2 */
+	color: #1f2937 !important;
+	margin: 0 !important;
+	letter-spacing: -0.02em !important;
+	text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+	transition: color 0.3s ease !important;
+}
+
+.prayer-card-modern.active .prayer-name-modern {
+	color: #8b5cf6 !important;
+	text-shadow: 0 1px 2px rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Time Display Section */
+.prayer-card-modern .time-display-section {
+	display: flex !important;
+	align-items: center !important;
+	gap: 12px !important;
+	z-index: 1 !important;
+	position: relative !important;
+}
+
+/* Prayer Time Main */
+.prayer-card-modern .prayer-time-main {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: flex-end !important;
+	gap: 2px !important;
+}
+
+/* Time Value */
+.prayer-card-modern .time-value-modern {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+	font-size: 14px ; 
+  /* Reduced from 14px */
+	font-weight: 800 !important;
+  opacity: 0.85 !important;
+	line-height: 1 !important;
+	color: #1f2937 !important;
+	letter-spacing: -0.02em !important;
+	text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+	transition: all 0.3s ease !important;
+	white-space: nowrap !important;
+}
+
+.prayer-card-modern.active .time-value-modern {
+	color: #8b5cf6 !important;
+	text-shadow: 0 1px 2px rgba(139, 92, 246, 0.2) !important;
+	font-weight: 700 !important;
+}
+
+
+
+.prayer-card-modern.active .time-label-modern {
+	color: #8b5cf6 !important;
+}
+
+
+/* Performance optimizations for Prayer Cards */
+.prayer-card-modern,
+.prayer-card-modern .prayer-icon-container {
+	will-change: transform !important;
+}
+
+/* Accessibility improvements for Prayer Cards */
+.prayer-card-modern:focus-within {
+	outline: 2px solid rgba(139, 92, 246, 0.5) !important;
+	outline-offset: 2px !important;
+}
+
+/* Shimmer Animation */
+@keyframes shimmer {
+	0% {
+		left: -100%;
+	}
+	100% {
+		left: 100%;
+	}
 }
