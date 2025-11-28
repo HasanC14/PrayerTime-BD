@@ -15,11 +15,30 @@ const MIN_SEARCH_LENGTH = 3;
 const DEBOUNCE_DELAY = 300;
 
 const CALCULATION_METHODS = [
-  { id: 1, name: "Karachi (Bangladesh)" },
-  { id: 2, name: "ISNA (North America)" },
-  { id: 3, name: "MWL (Europe/UK)" },
-  { id: 4, name: "Makkah" },
-  { id: 5, name: "Egyptian" },
+  { id: "auto", name: "Auto (Closest Authority)" },
+  { id: 0, name: "Jafari / Shia Ithna-Ashari" },
+  { id: 1, name: "University of Islamic Sciences, Karachi" },
+  { id: 2, name: "Islamic Society of North America" },
+  { id: 3, name: "Muslim World League" },
+  { id: 4, name: "Umm Al-Qura University, Makkah" },
+  { id: 5, name: "Egyptian General Authority of Survey" },
+  { id: 7, name: "Institute of Geophysics, University of Tehran" },
+  { id: 8, name: "Gulf Region" },
+  { id: 9, name: "Kuwait" },
+  { id: 10, name: "Qatar" },
+  { id: 11, name: "Majlis Ugama Islam Singapura, Singapore" },
+  { id: 12, name: "Union Organization islamic de France" },
+  { id: 13, name: "Diyanet İşleri Başkanlığı, Turkey" },
+  { id: 14, name: "Spiritual Administration of Muslims of Russia" },
+  { id: 15, name: "Moonsighting Committee Worldwide" },
+  { id: 16, name: "Dubai (experimental)" },
+  { id: 17, name: "Jabatan Kemajuan Islam Malaysia (JAKIM)" },
+  { id: 18, name: "Tunisia" },
+  { id: 19, name: "Algeria" },
+  { id: 20, name: "KEMENAG - Kementerian Agama Republik Indonesia" },
+  { id: 21, name: "Morocco" },
+  { id: 22, name: "Comunidade Islamica de Lisboa" },
+  { id: 23, name: "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan" },
 ];
 
 const ASR_METHODS = [
@@ -370,6 +389,7 @@ const SettingsModal = ({
                         </div>
                       ))}
                     </div>
+
                   </div>
                 </div>
               )}
@@ -403,6 +423,46 @@ const SettingsModal = ({
                   <span>{safeSettings.secondaryColor}</span>
                 </div>
               </div>
+
+              <button
+                className="reset-button"
+                onClick={() => {
+                  onSettingsChange({
+                    ...safeSettings,
+                    bgType: "gradient",
+                    bgColor: "#ffffff",
+                    gradientStart: "#d7bedc",
+                    gradientEnd: "#ecdfee",
+                    gradientAngle: 100,
+                    primaryColor: "#170939",
+                    secondaryColor: "#6f6885",
+                  });
+                }}
+                style={{
+                  marginTop: "24px",
+                  padding: "10px 16px",
+                  borderRadius: "8px",
+                  border: "1px solid #e2e8f0",
+                  background: "white",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  color: "#64748b",
+                  display: "block",
+                  width: "100%",
+                  textAlign: "center",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#f8fafc";
+                  e.target.style.borderColor = "#cbd5e1";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "white";
+                  e.target.style.borderColor = "#e2e8f0";
+                }}
+              >
+                Reset to Default
+              </button>
             </div>
           )}
 

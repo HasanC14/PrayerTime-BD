@@ -31,7 +31,7 @@ const DEFAULT_SETTINGS = {
   primaryColor: "#170939",
   secondaryColor: "#6f6885",
   school: 1, // Hanafi
-  method: 1, // Karachi
+  method: "auto", // Auto - defaults to closest authority
   midnightMode: 0, // Standard
   latitudeAdjustmentMethod: 3, // Angle Based
 };
@@ -122,9 +122,16 @@ function App() {
       // Fetch from API
       const timestamp = Math.floor(Date.now() / 1000);
 
-      const response = await fetch(
-        `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}&method=${settings.method}&school=${settings.school}&midnightMode=${settings.midnightMode}&latitudeAdjustmentMethod=${settings.latitudeAdjustmentMethod}`
-      );
+      // Build API URL - exclude method parameter if set to "auto"
+      let apiUrl = `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}`;
+
+      if (settings.method !== "auto") {
+        apiUrl += `&method=${settings.method}`;
+      }
+
+      apiUrl += `&school=${settings.school}&midnightMode=${settings.midnightMode}&latitudeAdjustmentMethod=${settings.latitudeAdjustmentMethod}`;
+
+      const response = await fetch(apiUrl);
       if (!response.ok) throw new Error(`Network error: ${response.status} ${response.statusText}`);
 
       const data = await response.json();
