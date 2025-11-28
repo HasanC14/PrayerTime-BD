@@ -9,118 +9,34 @@ import {
   formatTime,
   getCurrentTime,
   getNextPrayerTime,
-  cities,
+  DHAKA_DEFAULT,
+  addRecentLocation,
+  getRawCachedData,
 } from "../src/utils/helpers";
+import { storage } from "./utils/storage";
 import "./App.css";
 import Footer from "./components/Footer";
 import PrayerList from "./components/PrayerList";
+import SettingsModal from "./components/SettingsModal";
 
-// Custom Location Dropdown Component
-const LocationDropdown = ({ selectedLocation, onLocationChange, cities }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const dropdownRef = useRef(null);
-  const searchInputRef = useRef(null);
-
-  // Filter cities based on search term
-  const filteredCities = useMemo(() => {
-    return cities.filter((city) =>
-      city.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [cities, searchTerm]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-        setSearchTerm("");
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Focus search input when dropdown opens
-  useEffect(() => {
-    if (isOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [isOpen]);
-
-  const handleCitySelect = (city) => {
-    onLocationChange(city.id);
-    setIsOpen(false);
-    setSearchTerm("");
-  };
-
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      setSearchTerm("");
-    }
-  };
-
-  return (
-    <div className="location-dropdown" ref={dropdownRef}>
-      <div className="dropdown-trigger" onClick={handleToggle}>
-        <span>{selectedLocation?.name || "Select Location"}</span>
-        <svg
-          className={`dropdown-arrow ${isOpen ? "open" : ""}`}
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M7 10l5 5 5-5z" />
-        </svg>
-      </div>
-
-      {isOpen && (
-        <div className="dropdown-menu">
-          <div className="search-container">
-            <svg
-              className="search-icon"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-            </svg>
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search location..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
-          </div>
-
-          <div className="dropdown-list">
-            {filteredCities.length > 0 ? (
-              filteredCities.map((city) => (
-                <div
-                  key={city.id}
-                  className={`dropdown-item ${
-                    selectedLocation?.id === city.id ? "selected" : ""
-                  }`}
-                  onClick={() => handleCitySelect(city)}
-                >
-                  {city.name}
-                </div>
-              ))
-            ) : (
-              <div className="dropdown-item no-results">No locations found</div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+const DEFAULT_SETTINGS = {
+  bgType: "gradient",
+  bgColor: "#ffffff",
+  // Default gradient components
+  gradientStart: "#d7bedc",
+  gradientEnd: "#ecdfee",
+  gradientAngle: 100,
+  // Keep legacy bgGradient for backward compatibility if needed, but we'll construct it dynamically
+  bgGradient: "linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%)",
+  primaryColor: "#170939",
+  secondaryColor: "#6f6885",
+  school: 1, // Hanafi
+  method: 1, // Karachi
+  midnightMode: 0, // Standard
+  latitudeAdjustmentMethod: 3, // Angle Based
 };
+
+
 
 // Main App Component
 function App() {
@@ -132,30 +48,56 @@ function App() {
   const [isOffline, setIsOffline] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [error, setError] = useState(null);
+  const hasLoadedSettings = useRef(false);
 
-  const timestamp = Math.floor(Date.now() / 1000);
 
-  // Initialize location on app start
+
+  // Initialize app data
   useEffect(() => {
-    const cachedLocation = getCachedLocation();
-    if (cachedLocation) {
-      setSelectedLocation(cachedLocation);
-    } else {
-      // Default to Dhaka
-      const dhaka = cities.find((city) => city.name === "Dhaka");
-      setSelectedLocation(dhaka);
-      setCachedLocation(dhaka);
-    }
+    const initApp = async () => {
+      // Load settings from storage
+      const savedSettings = await storage.get("appSettings");
+      if (savedSettings) {
+        // Merge saved settings with defaults to ensure all properties exist
+        const mergedSettings = { ...DEFAULT_SETTINGS, ...savedSettings };
+        setSettings(mergedSettings);
+      } else {
+        // No saved settings found, using defaults
+      }
+      // Mark that we've loaded settings from storage
+      hasLoadedSettings.current = true;
+
+      // Load location from local storage
+      const cachedLocation = await getCachedLocation();
+      if (cachedLocation) {
+        setSelectedLocation(cachedLocation);
+      } else {
+        setSelectedLocation(DHAKA_DEFAULT);
+        await setCachedLocation(DHAKA_DEFAULT);
+      }
+    };
+
+    initApp();
   }, []);
 
   // Handle location change
-  const handleLocationChange = (cityId) => {
-    const newLocation = cities.find((city) => city.id === parseInt(cityId));
-    if (newLocation) {
-      setSelectedLocation(newLocation);
-      setCachedLocation(newLocation);
-      // Clear existing prayer times cache when location changes
-      localStorage.removeItem("prayerTimesCache");
+  const handleLocationChange = async (location) => {
+    if (location) {
+      console.log("🌍 Location changed:", {
+        name: location.name,
+        lat: location.lat,
+        lng: location.lng,
+      });
+
+      // Clear existing prayer times cache FIRST to prevent race condition
+      await storage.remove("prayerTimesCache");
+
+      setSelectedLocation(location);
+      await setCachedLocation(location);
+      await addRecentLocation(location);
     }
   };
 
@@ -165,9 +107,10 @@ function App() {
 
     try {
       setIsLoading(true);
+      setError(null);
 
       // Check cache first
-      const cachedData = getCachedData();
+      const cachedData = await getCachedData();
       if (cachedData) {
         setPrayerTimes(cachedData.timings);
         setHijriDate(cachedData.hijriDate);
@@ -177,10 +120,12 @@ function App() {
       }
 
       // Fetch from API
+      const timestamp = Math.floor(Date.now() / 1000);
+
       const response = await fetch(
-        `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}&method=8`
+        `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}&method=${settings.method}&school=${settings.school}&midnightMode=${settings.midnightMode}&latitudeAdjustmentMethod=${settings.latitudeAdjustmentMethod}`
       );
-      if (!response.ok) throw new Error("Network response was not ok");
+      if (!response.ok) throw new Error(`Network error: ${response.status} ${response.statusText}`);
 
       const data = await response.json();
       const hijriInfo = {
@@ -191,7 +136,7 @@ function App() {
       };
 
       // Cache the data
-      setCachedData({
+      await setCachedData({
         timings: data.data.timings,
         hijriDate: hijriInfo,
       });
@@ -202,17 +147,31 @@ function App() {
       setIsOffline(false);
     } catch (error) {
       console.error("Error fetching prayer times:", error);
+      setError(error.message);
 
       // Try to use cached data even if expired
-      const cachedData = getCachedData();
+      const cachedData = await getRawCachedData();
       if (cachedData) {
         setPrayerTimes(cachedData.timings);
         setHijriDate(cachedData.hijriDate);
         setIsOffline(true);
+        setError(null); // Clear error if cache fallback works
       }
       setIsLoading(false);
     }
-  }, [selectedLocation, timestamp]);
+  }, [selectedLocation, settings]);
+
+  // Clear prayer times cache only when calculation settings change
+  useEffect(() => {
+    // Don't clear cache until settings have been loaded from storage
+    if (!hasLoadedSettings.current) {
+      return;
+    }
+
+
+    // Only clear cache when calculation-related settings change
+    storage.remove("prayerTimesCache");
+  }, [settings.method, settings.school, settings.midnightMode, settings.latitudeAdjustmentMethod]);
 
   // Timer effect
   useEffect(() => {
@@ -242,7 +201,7 @@ function App() {
     if (selectedLocation) {
       fetchPrayerTimes();
     }
-  }, [selectedLocation, fetchPrayerTimes]);
+  }, [selectedLocation?.lat, selectedLocation?.lng, fetchPrayerTimes]);
 
   // Network status listener
   useEffect(() => {
@@ -257,6 +216,43 @@ function App() {
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
+
+
+
+  // Save settings to storage
+  useEffect(() => {
+    // Don't save defaults over existing settings on initial load
+    if (!hasLoadedSettings.current) {
+      return;
+    }
+    storage.set("appSettings", settings);
+  }, [settings]);
+
+  // Apply settings to body and CSS variables
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--primary-text-color", settings.primaryColor);
+    root.style.setProperty("--secondary-text-color", settings.secondaryColor);
+
+    if (settings.bgType === "solid") {
+      document.body.style.background = settings.bgColor;
+      // For solid background, active prayer gets a glass effect
+      root.style.setProperty("--active-prayer-bg", "rgba(255, 255, 255, 0.2)");
+    } else {
+      // Construct gradient from components if available, otherwise fallback to stored string
+      const angle = settings.gradientAngle || 100;
+      const start = settings.gradientStart || "#d7bedc";
+      const end = settings.gradientEnd || "#ecdfee";
+
+      const gradient = `linear-gradient(${angle}deg, ${start} 0%, ${end} 100%)`;
+      document.body.style.background = gradient;
+      root.style.setProperty("--main-gradient", gradient);
+
+      // Active prayer gets same gradient but with different angle (+135deg)
+      const activeGradient = `linear-gradient(${parseInt(angle) + 135}deg, ${start} 0%, ${end} 100%)`;
+      root.style.setProperty("--active-prayer-bg", activeGradient);
+    }
+  }, [settings]);
 
   if (isLoading) {
     return (
@@ -277,7 +273,17 @@ function App() {
     return (
       <div className="load">
         <p>
-          Unable to load prayer times. Please check your internet connection.
+          {error ? (
+            <>
+              <strong>Error:</strong> {error}
+              <br />
+              <span style={{ fontSize: "12px", color: "#666" }}>
+                (If you see "Failed to fetch", it means the app cannot reach the server. Check your internet, DNS, or <strong>try turning off your VPN</strong>.)
+              </span>
+            </>
+          ) : (
+            "Unable to load prayer times. Please check your internet connection."
+          )}
         </p>
         <button onClick={fetchPrayerTimes} className="retry-button">
           Retry
@@ -306,12 +312,41 @@ function App() {
         <svg className="location-icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
         </svg>
-        <LocationDropdown
-          selectedLocation={selectedLocation}
-          onLocationChange={handleLocationChange}
-          cities={cities}
-        />
+        <span
+          className="location-display"
+          title={selectedLocation?.name || "Select Location"}
+        >
+          {selectedLocation?.name || "Select Location"}
+        </span>
+        <button
+          className="settings-btn"
+          onClick={() => setIsSettingsOpen(true)}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
       </div>
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        settings={settings}
+        onSettingsChange={setSettings}
+        selectedLocation={selectedLocation}
+        onLocationChange={handleLocationChange}
+      />
+
 
       <div className="time-hero-section">
         <div className="time-display">
@@ -323,7 +358,7 @@ function App() {
             <span>{formatTime(remainingTime)}</span>{" "}
           </div>
         </div>
-        <img src="/logo1.png" alt="" />
+        {/* <img src="/logo1.png" alt="" /> */}
       </div>
 
       <div className="date-section">
@@ -347,7 +382,7 @@ function App() {
         prayerName={prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
       />
       <Footer />
-    </div>
+    </div >
   );
 }
 

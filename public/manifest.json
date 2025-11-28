@@ -7,9 +7,14 @@
     "default_popup": "index.html",
     "default_icon": "logo512.png"
   },
-  "permissions": ["offscreen"],
-  "host_permissions": ["https://api.aladhan.com/*"],
+  "permissions": [
+    "offscreen"
+  ],
+  "host_permissions": [
+    "https://api.aladhan.com/*",
+    "https://api.locationiq.com/*"
+  ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.aladhan.com https://api.locationiq.com"
   }
 }
