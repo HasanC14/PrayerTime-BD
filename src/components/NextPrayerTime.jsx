@@ -1,15 +1,8 @@
-import { FallingLines } from "react-loader-spinner";
+import Loader from "./Loader";
 
 export default function NextPrayerTime({ nextPrayer }) {
   if (!nextPrayer) {
-    return (
-      <FallingLines
-        color="rgb(199, 195, 195)"
-        width="100"
-        visible={true}
-        ariaLabel="falling-lines-loading"
-      />
-    );
+    return <Loader size="medium" color="rgb(199, 195, 195)" />;
   }
 
   const hours = nextPrayer.getHours();

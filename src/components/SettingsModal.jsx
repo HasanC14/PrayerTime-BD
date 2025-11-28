@@ -552,7 +552,11 @@ const SettingsModal = ({
                 <select
                   className="settings-select"
                   value={safeSettings.method}
-                  onChange={(e) => handleSettingChange("method", Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Keep "auto" as string, convert numbers to actual numbers
+                    handleSettingChange("method", value === "auto" ? "auto" : Number(value));
+                  }}
                 >
                   {CALCULATION_METHODS.map((method) => (
                     <option key={method.id} value={method.id}>

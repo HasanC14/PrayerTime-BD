@@ -1,4 +1,4 @@
-import { ThreeCircles } from "react-loader-spinner";
+import Loader from "./components/Loader";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
@@ -130,6 +130,19 @@ function App() {
       }
 
       apiUrl += `&school=${settings.school}&midnightMode=${settings.midnightMode}&latitudeAdjustmentMethod=${settings.latitudeAdjustmentMethod}`;
+
+      // API DEBUGGING - Remove this later
+      console.log("🕌 === ALADHAN API DEBUG ===");
+      console.log("📍 Location:", selectedLocation.name);
+      console.log("🌐 Coordinates:", { lat: selectedLocation.lat, lng: selectedLocation.lng });
+      console.log("⚙️ Settings:", {
+        method: settings.method,
+        school: settings.school,
+        midnightMode: settings.midnightMode,
+        latitudeAdjustmentMethod: settings.latitudeAdjustmentMethod
+      });
+      console.log("🔗 Full API URL:", apiUrl);
+      console.log("=========================");
 
       const response = await fetch(apiUrl);
       if (!response.ok) throw new Error(`Network error: ${response.status} ${response.statusText}`);
@@ -265,12 +278,7 @@ function App() {
     return (
       <div className="load">
         <div>
-          <ThreeCircles
-            height="100"
-            width="100"
-            color="#d2a4db"
-            visible={true}
-          />
+          <Loader size="large" color="#d2a4db" />
         </div>
       </div>
     );
