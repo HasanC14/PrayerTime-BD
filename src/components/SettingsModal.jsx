@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getRecentLocations } from "../utils/helpers";
 
 const PREDEFINED_GRADIENTS = [
@@ -10,7 +10,7 @@ const PREDEFINED_GRADIENTS = [
   { name: "Morning", start: "#e0c3fc", end: "#8ec5fc", angle: 120 },
 ];
 
-const LOCATIONIQ_API_KEY = "pk.6e59adae09bf1155632f74749dea0128";
+const LOCATIONIQ_API_KEY = import.meta.env.VITE_LOCATIONIQ_API_KEY;
 const MIN_SEARCH_LENGTH = 3;
 const DEBOUNCE_DELAY = 300;
 
@@ -291,6 +291,26 @@ const SettingsModal = ({
           {activeTab === "appearance" && (
             <div className="appearance-settings">
               <div className="setting-group">
+                <label>Time Format</label>
+                <div className="toggle-group">
+                  <button
+                    className={`toggle-btn ${safeSettings.timeFormat === "12h" ? "active" : ""
+                      }`}
+                    onClick={() => handleSettingChange("timeFormat", "12h")}
+                  >
+                    12 Hour
+                  </button>
+                  <button
+                    className={`toggle-btn ${safeSettings.timeFormat === "24h" ? "active" : ""
+                      }`}
+                    onClick={() => handleSettingChange("timeFormat", "24h")}
+                  >
+                    24 Hour
+                  </button>
+                </div>
+              </div>
+
+              <div className="setting-group">
                 <label>Background Style</label>
                 <div className="toggle-group">
                   <button
@@ -436,6 +456,7 @@ const SettingsModal = ({
                     gradientAngle: 100,
                     primaryColor: "#170939",
                     secondaryColor: "#6f6885",
+                    timeFormat: "12h",
                   });
                 }}
                 style={{

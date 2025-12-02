@@ -70,8 +70,13 @@ export const setCachedLocation = async (locationData) => {
   }
 };
 
-export const convertTo12Hour = (time) => {
+export const formatPrayerTime = (time, format = "12h") => {
   if (!time) return "";
+
+  if (format === "24h") {
+    return time;
+  }
+
   const [hours, minutes] = time.split(":").map(Number);
   const ampm = hours >= 12 ? "pm" : "am";
   const displayHours = hours % 12 || 12;
@@ -96,20 +101,29 @@ export const formatTime = (duration) => {
 
 export const getCurrentTime = () => new Date();
 
-export const parseTime = (timeString) => {
+export const getCurrentTimeInZone = (timezone) => {
+  if (!timezone) return new Date();
+  const now = new Date();
+  const tzString = now.toLocaleString('en-US', { timeZone: timezone });
+  return new Date(tzString);
+};
+
+export const parseTime = (timeString, timezone) => {
   const [hours, minutes] = timeString.split(":").map(Number);
-  const date = new Date();
+  const date = getCurrentTimeInZone(timezone);
   date.setHours(hours, minutes, 0, 0);
   return date;
 };
 
-export const getNextPrayerTime = (currentTime, prayerTimes) => {
+export const getNextPrayerTime = (currentTime, prayerTimes, timezone) => {
   if (!prayerTimes)
     return {
-      nextPrayerTime: null,
-      prayerName: null,
       currentPrayer: null,
     };
+
+  // Use timezone-aware current time if timezone is provided
+  // Note: currentTime passed from App.jsx should already be timezone-adjusted if timezone is present
+  const now = currentTime;
 
   const prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
   let currentPrayer = null;
@@ -121,24 +135,24 @@ export const getNextPrayerTime = (currentTime, prayerTimes) => {
     const nextPrayer = prayerOrder[i + 1] || prayerOrder[0]; // Wrap around to Fajr
 
     if (prayerTimes[prayer] && prayerTimes[nextPrayer]) {
-      const prayerTime = parseTime(prayerTimes[prayer]);
-      const nextPrayerTime = parseTime(prayerTimes[nextPrayer]);
+      const prayerTime = parseTime(prayerTimes[prayer], timezone);
+      const nextPrayerTime = parseTime(prayerTimes[nextPrayer], timezone);
 
       // Handle overnight transition (Isha to Fajr)
       if (prayer === "Isha") {
-        const tomorrowFajr = parseTime(prayerTimes.Fajr);
+        const tomorrowFajr = parseTime(prayerTimes.Fajr, timezone);
         tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
 
         if (
-          currentTime >= prayerTime ||
-          currentTime < parseTime(prayerTimes.Fajr)
+          now >= prayerTime ||
+          now < parseTime(prayerTimes.Fajr, timezone)
         ) {
           currentPrayer = "Isha";
           break;
         }
       } else {
         // Regular prayer windows
-        if (currentTime >= prayerTime && currentTime < nextPrayerTime) {
+        if (now >= prayerTime && now < nextPrayerTime) {
           currentPrayer = prayer;
           break;
         }
@@ -149,8 +163,8 @@ export const getNextPrayerTime = (currentTime, prayerTimes) => {
   // Find next prayer
   for (const prayer of prayerOrder) {
     if (prayerTimes[prayer]) {
-      const prayerTime = parseTime(prayerTimes[prayer]);
-      if (currentTime < prayerTime) {
+      const prayerTime = parseTime(prayerTimes[prayer], timezone);
+      if (now < prayerTime) {
         return {
           nextPrayerTime: prayerTime,
           prayerName: prayer,
@@ -161,7 +175,7 @@ export const getNextPrayerTime = (currentTime, prayerTimes) => {
   }
 
   // Next prayer is Fajr tomorrow
-  const tomorrowFajr = parseTime(prayerTimes.Fajr);
+  const tomorrowFajr = parseTime(prayerTimes.Fajr, timezone);
   tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
   return {
     nextPrayerTime: tomorrowFajr,

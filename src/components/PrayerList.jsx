@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { convertTo12Hour } from "../utils/helpers";
+import { formatPrayerTime } from "../utils/helpers";
 
-export default function PrayerList({ prayerTimes, prayerName }) {
+export default function PrayerList({ prayerTimes, prayerName, timeFormat }) {
   const prayerData = useMemo(() => {
     if (!prayerTimes) return [];
 
@@ -18,19 +18,18 @@ export default function PrayerList({ prayerTimes, prayerName }) {
       { name: "Isha", start: prayerTimes.Isha, end: prayerTimes.Fajr },
     ].map((prayer) => ({
       ...prayer,
-      startFormatted: convertTo12Hour(prayer.start),
-      endFormatted: convertTo12Hour(prayer.end),
+      startFormatted: formatPrayerTime(prayer.start, timeFormat),
+      endFormatted: formatPrayerTime(prayer.end, timeFormat),
     }));
-  }, [prayerTimes]);
+  }, [prayerTimes, timeFormat]);
 
   return (
     <div className="prayer-times">
       {prayerData.map((prayer) => (
         <div
           key={prayer.name}
-          className={`prayer-item ${
-            prayerName == prayer.name ? "active" : ""
-          } `}
+          className={`prayer-item ${prayerName == prayer.name ? "active" : ""
+            } `}
         >
           <div className="prayer-icon">
             <img

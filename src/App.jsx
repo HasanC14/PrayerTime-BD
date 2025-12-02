@@ -12,6 +12,7 @@ import {
   DHAKA_DEFAULT,
   addRecentLocation,
   getRawCachedData,
+  getCurrentTimeInZone,
 } from "../src/utils/helpers";
 import { storage } from "./utils/storage";
 import "./App.css";
@@ -34,6 +35,7 @@ const DEFAULT_SETTINGS = {
   method: "auto", // Auto - defaults to closest authority
   midnightMode: 0, // Standard
   latitudeAdjustmentMethod: 3, // Angle Based
+  timeFormat: "12h", // Default to 12-hour format
 };
 
 
@@ -45,6 +47,7 @@ function App() {
   const [prayerTimes, setPrayerTimes] = useState(null);
   const [prayerName, setPrayerName] = useState(null);
   const [hijriDate, setHijriDate] = useState(null);
+  const [timezone, setTimezone] = useState(null);
   const [isOffline, setIsOffline] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -114,6 +117,7 @@ function App() {
       if (cachedData) {
         setPrayerTimes(cachedData.timings);
         setHijriDate(cachedData.hijriDate);
+        setTimezone(cachedData.timezone);
         setIsLoading(false);
         setIsOffline(false);
         return;
@@ -159,9 +163,11 @@ function App() {
       await setCachedData({
         timings: data.data.timings,
         hijriDate: hijriInfo,
+        timezone: data.data.meta.timezone,
       });
 
       setHijriDate(hijriInfo);
+      setTimezone(data.data.meta.timezone);
       setPrayerTimes(data.data.timings);
       setIsLoading(false);
       setIsOffline(false);
@@ -174,6 +180,7 @@ function App() {
       if (cachedData) {
         setPrayerTimes(cachedData.timings);
         setHijriDate(cachedData.hijriDate);
+        setTimezone(cachedData.timezone);
         setIsOffline(true);
         setError(null); // Clear error if cache fallback works
       }
@@ -198,10 +205,13 @@ function App() {
     if (!prayerTimes) return;
 
     const updateTimer = () => {
-      const currentTime = getCurrentTime();
+      // Use timezone if available, otherwise local time
+      const currentTime = timezone ? getCurrentTimeInZone(timezone) : getCurrentTime();
+
       const { nextPrayerTime, currentPrayer } = getNextPrayerTime(
         currentTime,
-        prayerTimes
+        prayerTimes,
+        timezone
       );
 
       if (nextPrayerTime) {
@@ -278,7 +288,7 @@ function App() {
     return (
       <div className="load">
         <div>
-          <Loader size="large" color="#d2a4db" />
+          <Loader size="large" color={settings.primaryColor} />
         </div>
       </div>
     );
@@ -395,6 +405,7 @@ function App() {
       <PrayerList
         prayerTimes={prayerTimes}
         prayerName={prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
+        timeFormat={settings.timeFormat}
       />
       <Footer />
     </div >
