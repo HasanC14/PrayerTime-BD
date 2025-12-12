@@ -13,12 +13,14 @@ import {
   addRecentLocation,
   getRawCachedData,
   getCurrentTimeInZone,
+  parseTime,
 } from "../src/utils/helpers";
 import { storage } from "./utils/storage";
 import "./App.css";
 import Footer from "./components/Footer";
 import PrayerList from "./components/PrayerList";
 import SettingsModal from "./components/SettingsModal";
+import { getPrayerTimes } from "./utils/prayerTimeService";
 
 const DEFAULT_SETTINGS = {
   bgType: "gradient",
@@ -56,6 +58,8 @@ function App() {
   const [error, setError] = useState(null);
   const hasLoadedSettings = useRef(false);
 
+
+  const [forbiddenWarning, setForbiddenWarning] = useState(null);
 
 
   // Initialize app data
@@ -104,86 +108,39 @@ function App() {
     }
   };
 
-  // Fetch prayer times with selected location
+  // Fetch prayer times using local calculation
   const fetchPrayerTimes = useCallback(async () => {
-    if (!selectedLocation) return;
+    if (!selectedLocation) return; // Prevent run if location not selected
 
     try {
       setIsLoading(true);
       setError(null);
 
-      // Check cache first
-      const cachedData = await getCachedData();
-      if (cachedData) {
-        setPrayerTimes(cachedData.timings);
-        setHijriDate(cachedData.hijriDate);
-        setTimezone(cachedData.timezone);
-        setIsLoading(false);
+      // Perform calculation
+      const data = getPrayerTimes(selectedLocation, settings, new Date());
+
+      if (data) {
+        setHijriDate(data.hijriDate);
+        setTimezone(data.timezone);
+        setPrayerTimes(data.timings);
+
+        // Cache the calculated data (optional but keeps consistency)
+        await setCachedData({
+          timings: data.timings,
+          hijriDate: data.hijriDate,
+          timezone: data.timezone,
+        });
+
         setIsOffline(false);
-        return;
+      } else {
+        throw new Error("Unable to calculate prayer times for this location.");
       }
 
-      // Fetch from API
-      const timestamp = Math.floor(Date.now() / 1000);
-
-      // Build API URL - exclude method parameter if set to "auto"
-      let apiUrl = `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${selectedLocation.lat}&longitude=${selectedLocation.lng}`;
-
-      if (settings.method !== "auto") {
-        apiUrl += `&method=${settings.method}`;
-      }
-
-      apiUrl += `&school=${settings.school}&midnightMode=${settings.midnightMode}&latitudeAdjustmentMethod=${settings.latitudeAdjustmentMethod}`;
-
-      // API DEBUGGING - Remove this later
-      console.log("🕌 === ALADHAN API DEBUG ===");
-      console.log("📍 Location:", selectedLocation.name);
-      console.log("🌐 Coordinates:", { lat: selectedLocation.lat, lng: selectedLocation.lng });
-      console.log("⚙️ Settings:", {
-        method: settings.method,
-        school: settings.school,
-        midnightMode: settings.midnightMode,
-        latitudeAdjustmentMethod: settings.latitudeAdjustmentMethod
-      });
-      console.log("🔗 Full API URL:", apiUrl);
-      console.log("=========================");
-
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error(`Network error: ${response.status} ${response.statusText}`);
-
-      const data = await response.json();
-      const hijriInfo = {
-        day: data.data.date.hijri.day,
-        month: data.data.date.hijri.month.en,
-        year: data.data.date.hijri.year,
-        abbreviated: data.data.date.hijri.designation.abbreviated,
-      };
-
-      // Cache the data
-      await setCachedData({
-        timings: data.data.timings,
-        hijriDate: hijriInfo,
-        timezone: data.data.meta.timezone,
-      });
-
-      setHijriDate(hijriInfo);
-      setTimezone(data.data.meta.timezone);
-      setPrayerTimes(data.data.timings);
       setIsLoading(false);
-      setIsOffline(false);
-    } catch (error) {
-      console.error("Error fetching prayer times:", error);
-      setError(error.message);
 
-      // Try to use cached data even if expired
-      const cachedData = await getRawCachedData();
-      if (cachedData) {
-        setPrayerTimes(cachedData.timings);
-        setHijriDate(cachedData.hijriDate);
-        setTimezone(cachedData.timezone);
-        setIsOffline(true);
-        setError(null); // Clear error if cache fallback works
-      }
+    } catch (error) {
+      console.error("Error calculating prayer times:", error);
+      setError(error.message);
       setIsLoading(false);
     }
   }, [selectedLocation, settings]);
@@ -206,13 +163,54 @@ function App() {
 
     const updateTimer = () => {
       // Use timezone if available, otherwise local time
-      const currentTime = timezone ? getCurrentTimeInZone(timezone) : getCurrentTime();
+      let currentTime = timezone ? getCurrentTimeInZone(timezone) : getCurrentTime();
+
+      // Update currentDate state for UI display if needed (e.g., new minute)
+      if (Math.abs(currentTime.getTime() - currentDate.getTime()) > 60000) {
+        setCurrentDate(currentTime);
+      }
 
       const { nextPrayerTime, currentPrayer } = getNextPrayerTime(
         currentTime,
         prayerTimes,
         timezone
       );
+
+      // === PROHIBITED TIME CHECKS ===
+      let warning = null;
+
+      if (prayerTimes.Sunrise && prayerTimes.Dhuhr && prayerTimes.Maghrib) {
+        // Parse times for today
+        const sunriseTime = parseTime(prayerTimes.Sunrise, timezone);
+        const dhuhrTime = parseTime(prayerTimes.Dhuhr, timezone);
+        const maghribTime = parseTime(prayerTimes.Maghrib, timezone);
+
+        const MS_PER_MINUTE = 60000;
+
+        // 1. First 15 mins of Sunrise (Salatud Doha Start)
+        // Sunrise is when it starts, so prohibited is [Sunrise, Sunrise + 15m]
+        const sunriseEndProhibited = new Date(sunriseTime.getTime() + 15 * MS_PER_MINUTE);
+
+        if (currentTime >= sunriseTime && currentTime < sunriseEndProhibited) {
+          warning = "The sun is rising. It is prohibited to pray now. Wait approx. 15 minutes to start Salatul Duha.";
+        }
+
+        // 2. Last 30 mins before Dhuhr (Zawal)
+        const zawalStart = new Date(dhuhrTime.getTime() - 30 * MS_PER_MINUTE);
+
+        if (currentTime >= zawalStart && currentTime < dhuhrTime) {
+          warning = "It is Zawal (solar noon). Prayer is prohibited until the sun passes its peak and Dhuhr begins.";
+        }
+
+        // 3. Last 15 mins before Maghrib (Asr End)
+        const asrProhibitedStart = new Date(maghribTime.getTime() - 15 * MS_PER_MINUTE);
+
+        if (currentTime >= asrProhibitedStart && currentTime < maghribTime) {
+          warning = "The sun is setting. Voluntary prayers are prohibited. However, if you missed today's Asr, you can pray it now.";
+        }
+      }
+
+      setForbiddenWarning(warning);
 
       if (nextPrayerTime) {
         const timeDiff = nextPrayerTime.getTime() - currentTime.getTime();
@@ -224,7 +222,7 @@ function App() {
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [prayerTimes]);
+  }, [prayerTimes, timezone, currentDate]);
 
   // Fetch prayer times when location changes
   useEffect(() => {
@@ -319,6 +317,8 @@ function App() {
 
   return (
     <div className="container">
+
+
       {isOffline && (
         <div
           style={{
@@ -329,7 +329,7 @@ function App() {
             fontSize: "14px",
           }}
         >
-          You're offline. Showing cached prayer times.
+          You're offline. Location search may be unavailable.
         </div>
       )}
 
@@ -379,8 +379,20 @@ function App() {
             {prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
           </div>
           <div className="time-info">
-            ends in
-            <span>{formatTime(remainingTime)}</span>{" "}
+            ends in {" "}
+            <span style={{ color: forbiddenWarning ? "#c11010" : "inherit", display: "inline-flex", alignItems: "center", gap: "5px" }}>
+              {formatTime(remainingTime)}
+              {forbiddenWarning && (
+                <div className="tooltip-container" style={{ marginLeft: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                  <span className="tooltip-text" style={{ bottom: "150%", width: "240px", marginLeft: "-120px" }}>{forbiddenWarning}</span>
+                </div>
+              )}
+            </span>{" "}
           </div>
         </div>
         {/* <img src="/logo1.png" alt="" /> */}

@@ -154,6 +154,7 @@ const SettingsModal = ({
   const [suggestions, setSuggestions] = useState([]);
   const [recentLocations, setRecentLocations] = useState([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [manualCoords, setManualCoords] = useState({ lat: "", lng: "" });
   const searchTimeoutRef = useRef(null);
 
   // Defensive check for settings
@@ -169,6 +170,16 @@ const SettingsModal = ({
       getRecentLocations().then(setRecentLocations);
     }
   }, [isOpen, activeTab]);
+
+  // Sync manual inputs with selected location
+  useEffect(() => {
+    if (selectedLocation) {
+      setManualCoords({
+        lat: selectedLocation.lat ?? "",
+        lng: selectedLocation.lng ?? ""
+      });
+    }
+  }, [selectedLocation]);
 
   // Fetch suggestions from LocationIQ API
   const fetchSuggestions = useCallback(async (query) => {
@@ -556,6 +567,108 @@ const SettingsModal = ({
                 ) : searchTerm.length === 0 && recentLocations.length === 0 ? (
                   <div className="no-results">No recent locations. Search to find a location.</div>
                 ) : null}
+              </div>
+
+              <div className="divider"></div>
+
+              <div className="setting-group">
+                <label style={{ marginBottom: "10px" }}>Manual Coordinates</label>
+                <form
+                  style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const lat = parseFloat(formData.get("latitude"));
+                    const lng = parseFloat(formData.get("longitude"));
+
+                    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                      setIsLoadingSuggestions(true);
+                      let locationName = "Custom Coordinates";
+
+                      try {
+                        const response = await fetch(
+                          `https://us1.locationiq.com/v1/reverse?key=${LOCATIONIQ_API_KEY}&lat=${lat}&lon=${lng}&format=json`
+                        );
+                        if (response.ok) {
+                          const data = await response.json();
+                          // Construct a shorter name: City, Country
+                          const addr = data.address || {};
+                          const city = addr.city || addr.town || addr.village || addr.suburb || addr.municipality || addr.county || addr.state_district;
+                          const country = addr.country;
+
+                          if (city && country) {
+                            locationName = `${city}, ${country}`;
+                          } else if (data.display_name) {
+                            locationName = data.display_name.split(',').slice(0, 2).join(','); // Take first 2 parts if no specific city found
+                          }
+                        }
+                      } catch (err) {
+                        console.error("Reverse geocoding failed", err);
+                      } finally {
+                        setIsLoadingSuggestions(false);
+                        onLocationChange({
+                          name: locationName,
+                          lat: lat,
+                          lng: lng
+                        });
+                      }
+                    }
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: "10px", marginBottom: "4px" }}>Latitude</label>
+                    <input
+                      name="latitude"
+                      type="number"
+                      step="any"
+                      placeholder="23.81"
+                      value={manualCoords.lat}
+                      onChange={(e) => setManualCoords(prev => ({ ...prev, lat: e.target.value }))}
+                      style={{
+                        width: "100%",
+                        padding: "8px",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "8px",
+                        fontSize: "13px"
+                      }}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: "10px", marginBottom: "4px" }}>Longitude</label>
+                    <input
+                      name="longitude"
+                      type="number"
+                      step="any"
+                      placeholder="90.41"
+                      value={manualCoords.lng}
+                      onChange={(e) => setManualCoords(prev => ({ ...prev, lng: e.target.value }))}
+                      style={{
+                        width: "100%",
+                        padding: "8px",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "8px",
+                        fontSize: "13px"
+                      }}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isLoadingSuggestions}
+                    style={{
+                      padding: "8px 12px",
+                      background: isLoadingSuggestions ? "#94a3b8" : "#170939",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: "13px",
+                      cursor: isLoadingSuggestions ? "wait" : "pointer",
+                      height: "35px",
+                      minWidth: "60px"
+                    }}
+                  >
+                    {isLoadingSuggestions ? "..." : "Apply"}
+                  </button>
+                </form>
               </div>
             </div>
           )}
