@@ -1,4 +1,5 @@
-# 🕋 PrayerTime is now Global
+# ![Logo](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/logo32.png) PrayerTime is now Global
+
 
 PrayerTime is a powerful, lightweight, and highly customizable Chrome extension designed to help Muslims **worldwide** keep track of their daily prayers. Instantly see the time remaining until the next prayer and view all timings for the day directly in your browser.
 
