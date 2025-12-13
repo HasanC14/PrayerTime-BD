@@ -20,9 +20,13 @@ Originally built for Bangladesh, this extension has evolved into a **global tool
 ## 📸 Screenshots
 
 | Appearance & Themes | Location Settings | Calculation Settings |
-| :---: | :---: | :---: | :---: |
-| ![Main Dashboard](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/screenshots/01.png) | ![Appearance](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/screenshots/02.png) | ![Location](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/screenshots/03.png) | ![Calculation](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/screenshots/04.png) |
-| *Live countdown and daily prayer schedule.* | *Build your own custom theme* | *Search globally or use coordinates* | *Advanced Juristic methods* |
+
+![Main Dashboard](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/screenshots/01.png) ![Appearance](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/screenshots/02.png) ![Location](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/screenshots/03.png) ![Calculation](https://raw.githubusercontent.com/HasanC14/PrayerTime-BD/main/public/screenshots/04.png) 
+
+| *Live countdown and daily prayer schedule.* 
+| *Build your own custom theme* 
+| *Search globally or use coordinates* 
+| *Advanced Juristic methods* 
 
 ## ⚙️ Installation
 
