@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "PrayerTime BD",
-  "description": "Get accurate prayer times for Bangladesh with the PrayerTime BD Chrome extension. This extension provides the exact timings for all prayers.",
-  "version": "1.0",
+  "name": "PrayerTime",
+  "description": "Get accurate prayer times for any location worldwide with the PrayerTime Chrome extension. Now equipped with advanced calculation methods to ensure precision wherever you are, plus a new theme creator that lets you fully personalize the look and feel of your experience.",
+  "version": "2.0",
   "action": {
     "default_popup": "index.html",
     "default_icon": "logo512.png"
@@ -11,10 +11,9 @@
     "offscreen"
   ],
   "host_permissions": [
-    "https://api.aladhan.com/*",
     "https://api.locationiq.com/*"
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.aladhan.com https://api.locationiq.com"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.locationiq.com"
   }
 }

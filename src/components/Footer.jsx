@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="footer-text">
         Made with <FaHeart className="heart-icon" /> by{" "}
         <a
-          href="https://hasanchowdhury.com"
+          href="https://hasanbuilds.com"
           target="_blank"
           rel="noreferrer"
         >
@@ -39,14 +39,14 @@ export default function Footer() {
         >
           <FaLinkedinIn />
         </a>
-        <a
+        {/* <a
           href="#"
           target="_blank"
           rel="noreferrer"
           title="Buy me a coffee"
         >
           <SiBuymeacoffee />
-        </a>
+        </a> */}
       </div>
     </div>
   );
