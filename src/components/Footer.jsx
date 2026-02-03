@@ -5,16 +5,33 @@ export default function Footer() {
   return (
     <div className="footer">
       <div className="footer-text">
-        Made with <FaHeart className="heart-icon" /> by{" "}
+        {/* Made with <FaHeart className="heart-icon" /> by{" "}
         <a
           href="https://hasanbuilds.com"
           target="_blank"
           rel="noreferrer"
         >
           Hasan
+        </a> */}
+        Powered by{" "}
+        <a
+          href="https://pricepoka.com"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Pricepoka
         </a>
       </div>
+
       <div className="social-links">
+        <a
+          href="https://www.supportkori.com/devhasan"
+          target="_blank"
+          rel="noreferrer"
+          title="Buy me a coffee"
+        >
+          <SiBuymeacoffee />
+        </a>
         <a
           href="https://github.com/HasanC14/PrayerTime-BD"
           target="_blank"
@@ -39,14 +56,7 @@ export default function Footer() {
         >
           <FaLinkedinIn />
         </a>
-        {/* <a
-          href="#"
-          target="_blank"
-          rel="noreferrer"
-          title="Buy me a coffee"
-        >
-          <SiBuymeacoffee />
-        </a> */}
+
       </div>
     </div>
   );

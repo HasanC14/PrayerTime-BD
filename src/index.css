@@ -14,7 +14,7 @@
 body {
   font-family: "Bricolage Grotesque", sans-serif;
   width: 380px;
-  height: 570px;
+  height: 600px;
   background: linear-gradient(100deg, #d7bedc 0%, #ecdfee 100%);
   color: var(--primary-text-color);
 }
@@ -171,7 +171,7 @@ body {
 
 .footer {
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: 14px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

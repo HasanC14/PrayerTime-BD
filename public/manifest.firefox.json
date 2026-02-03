@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "PrayerTime",
+    "description": "Accurate global prayer times with advanced calculation precision and a new personalized theme creator.",
+    "version": "3.0.0",
+    "icons": {
+        "16": "logo16.png",
+        "32": "logo32.png",
+        "192": "logo192.png",
+        "512": "logo512.png"
+    },
+    "action": {
+        "default_popup": "index.html",
+        "default_icon": "logo512.png"
+    },
+    "host_permissions": [
+        "https://api.locationiq.com/*"
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.locationiq.com"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "prayertime@hubxpert.com",
+            "strict_min_version": "109.0"
+        }
+    }
+}

@@ -14,12 +14,14 @@ import {
   getRawCachedData,
   getCurrentTimeInZone,
   parseTime,
+  formatPrayerTime,
 } from "../src/utils/helpers";
 import { storage } from "./utils/storage";
 import "./App.css";
 import Footer from "./components/Footer";
 import PrayerList from "./components/PrayerList";
 import SettingsModal from "./components/SettingsModal";
+import ProhibitedTimesModal from "./components/ProhibitedTimesModal";
 import { getPrayerTimes } from "./utils/prayerTimeService";
 
 const DEFAULT_SETTINGS = {
@@ -38,6 +40,7 @@ const DEFAULT_SETTINGS = {
   midnightMode: 0, // Standard
   latitudeAdjustmentMethod: 3, // Angle Based
   timeFormat: "12h", // Default to 12-hour format
+  ramadanMode: false,
 };
 
 
@@ -60,6 +63,9 @@ function App() {
 
 
   const [forbiddenWarning, setForbiddenWarning] = useState(null);
+  const [isProhibitedModalOpen, setIsProhibitedModalOpen] = useState(false);
+  const [ramadanState, setRamadanState] = useState({ target: "", remaining: 0, progress: 0 });
+  const [prayerProgress, setPrayerProgress] = useState(0);
 
 
   // Initialize app data
@@ -212,17 +218,84 @@ function App() {
 
       setForbiddenWarning(warning);
 
+      // Ramadan Calculation
+      if (settings.ramadanMode) {
+        const fajr = parseTime(prayerTimes.Fajr, timezone);
+        const maghrib = parseTime(prayerTimes.Maghrib, timezone);
+
+        // Ensure parsing worked
+        if (fajr && maghrib) {
+          let start, end, targetName;
+
+          // Determine phase
+          if (currentTime >= fajr && currentTime < maghrib) {
+            // Fasting (Day)
+            start = fajr;
+            end = maghrib;
+            targetName = "Iftar";
+          } else {
+            // Eating (Night)
+            targetName = "Sehri";
+            if (currentTime >= maghrib) {
+              // Evening: start = Maghrib today, end = Fajr tomorrow
+              start = maghrib;
+              const nextFajr = new Date(fajr);
+              nextFajr.setDate(nextFajr.getDate() + 1);
+              end = nextFajr;
+            } else {
+              // Pre-dawn: start = Maghrib yesterday, end = Fajr today
+              const prevMaghrib = new Date(maghrib);
+              prevMaghrib.setDate(prevMaghrib.getDate() - 1);
+              start = prevMaghrib;
+              end = fajr;
+            }
+          }
+
+          const total = end.getTime() - start.getTime();
+          const elapsed = currentTime.getTime() - start.getTime();
+          const progress = Math.min(100, Math.max(0, (elapsed / total) * 100));
+
+          setRamadanState({
+            target: targetName,
+            remaining: end.getTime() - currentTime.getTime(),
+            progress
+          });
+        }
+      }
+
       if (nextPrayerTime) {
         const timeDiff = nextPrayerTime.getTime() - currentTime.getTime();
         setRemainingTime(timeDiff);
         setPrayerName(currentPrayer);
+
+        // Calculate progress for normal prayer mode
+        if (currentPrayer && prayerTimes[currentPrayer]) {
+          const prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
+          const currentIndex = prayerOrder.indexOf(currentPrayer);
+
+          if (currentIndex !== -1) {
+            let currentPrayerStart = parseTime(prayerTimes[currentPrayer], timezone);
+
+            // Handle Isha wrap-around (past midnight)
+            // If current prayer is Isha and we are in the early morning (before Fajr),
+            // currentPrayerStart (Isha today) is in the future. We need yesterday's Isha.
+            if (currentPrayer === "Isha" && currentTime < currentPrayerStart) {
+              currentPrayerStart.setDate(currentPrayerStart.getDate() - 1);
+            }
+
+            const total = nextPrayerTime.getTime() - currentPrayerStart.getTime();
+            const elapsed = currentTime.getTime() - currentPrayerStart.getTime();
+            const progress = Math.min(100, Math.max(0, (elapsed / total) * 100));
+            setPrayerProgress(progress);
+          }
+        }
       }
     };
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [prayerTimes, timezone, currentDate]);
+  }, [prayerTimes, timezone, currentDate, settings.ramadanMode]);
 
   // Fetch prayer times when location changes
   useEffect(() => {
@@ -333,34 +406,68 @@ function App() {
         </div>
       )}
 
-      <div className="header">
-        <svg className="location-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-        </svg>
-        <span
-          className="location-display"
-          title={selectedLocation?.name || "Select Location"}
-        >
-          {selectedLocation?.name || "Select Location"}
-        </span>
-        <button
-          className="settings-btn"
-          onClick={() => setIsSettingsOpen(true)}
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
+      <div className="header" style={{ justifyContent: 'space-between', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <svg className="location-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
           </svg>
-        </button>
+          <span
+            className="location-display"
+            title={selectedLocation?.name || "Select Location"}
+          >
+            {selectedLocation?.name || "Select Location"}
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <button
+            className="settings-btn"
+            onClick={() => setSettings(s => ({ ...s, ramadanMode: !s.ramadanMode }))}
+            style={{
+              color: settings.ramadanMode ? "var(--primary-text-color)" : "var(--secondary-text-color)",
+              opacity: settings.ramadanMode ? 1 : 0.6,
+              marginRight: "4px"
+            }}
+            title={settings.ramadanMode ? "Ramadan Mode: ON" : "Ramadan Mode: OFF"}
+          >
+            {/* Lantern Icon - User Provided */}
+            <svg
+              fill="currentColor"
+              height="20px"
+              width="20px"
+              version="1.1"
+              id="Capa_1"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 396.586 396.586"
+            >
+              <g>
+                <path d="M281.603,179.637c0.828,0,1.5-0.671,1.5-1.5v-4.601h4.451c0.828,0,1.5-0.671,1.5-1.5v-9.699c0-0.829-0.672-1.5-1.5-1.5 h-24.146c-3.842-27.97-40.149-45.072-56.818-51.509c0.26-0.794,0.404-1.637,0.404-2.515c0-3.405-2.109-6.332-5.133-7.646 c1.078-0.939,1.76-2.294,1.76-3.806c0-1.994-1.182-3.722-2.906-4.57l-0.781-6.204c3.354-0.748,5.861-3.736,5.861-7.315v-0.5 c0-4.142-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.358-7.5,7.5v0.5c0,3.579,2.508,6.567,5.861,7.315l-0.781,6.204 c-1.725,0.849-2.906,2.576-2.906,4.57c0,1.512,0.682,2.866,1.758,3.806c-3.021,1.313-5.131,4.24-5.131,7.646 c0,0.877,0.144,1.721,0.404,2.515c-16.67,6.437-52.977,23.539-56.818,51.509h-24.148c-0.828,0-1.5,0.671-1.5,1.5v9.699 c0,0.829,0.672,1.5,1.5,1.5h4.451v4.601c0,0.829,0.672,1.5,1.5,1.5h3.271v162.282h-3.271c-0.828,0-1.5,0.671-1.5,1.5v4.598h-4.451 c-0.828,0-1.5,0.671-1.5,1.5v9.702c0,0.829,0.672,1.5,1.5,1.5h32.018c17.57,23.99,57.244,35.867,57.244,35.867 s39.674-11.877,57.244-35.867h32.016c0.828,0,1.5-0.671,1.5-1.5v-9.702c0-0.829-0.672-1.5-1.5-1.5h-4.451v-4.598 c0-0.829-0.672-1.5-1.5-1.5h-3.27V179.637H281.603z M161.343,331.651h-26.795V228.584c0-24.726,13.396-40.929,13.396-40.929 s13.398,16.203,13.398,40.929V331.651z M221.644,331.651h-46.701V228.584c0-24.726,23.352-40.929,23.352-40.929 s23.35,16.203,23.35,40.929V331.651z M262.04,331.651h-26.795V228.584c0-24.726,13.396-40.929,13.396-40.929 s13.398,16.203,13.398,40.929V331.651z"></path>
+                <path d="M198.294,39.054c4.143,0,7.5-3.358,7.5-7.5v-0.963c0-4.142-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.358-7.5,7.5v0.963 C190.794,35.695,194.151,39.054,198.294,39.054z"></path>
+                <path d="M198.294,15.962c4.143,0,7.5-3.357,7.5-7.5V7.5c0-4.142-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.358-7.5,7.5v0.962 C190.794,12.604,194.151,15.962,198.294,15.962z"></path>
+                <path d="M198.294,62.145c4.143,0,7.5-3.358,7.5-7.5v-0.962c0-4.142-3.357-7.5-7.5-7.5c-4.143,0-7.5,3.358-7.5,7.5v0.962 C190.794,58.786,194.151,62.145,198.294,62.145z"></path>
+              </g>
+            </svg>
+          </button>
+
+          <button
+            className="settings-btn"
+            onClick={() => setIsSettingsOpen(true)}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <SettingsModal
@@ -374,32 +481,94 @@ function App() {
 
 
       <div className="time-hero-section">
-        <div className="time-display">
-          <div className="current-time">
-            {prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
-          </div>
-          <div className="time-info">
-            ends in {" "}
-            <span style={{ color: forbiddenWarning ? "#c11010" : "inherit", display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              {formatTime(remainingTime)}
-              {forbiddenWarning && (
-                <div className="tooltip-container" style={{ marginLeft: 0 }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                  </svg>
-                  <span className="tooltip-text" style={{ bottom: "150%", width: "240px", marginLeft: "-120px" }}>{forbiddenWarning}</span>
+        {settings.ramadanMode ? (
+          <div className="time-display" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', marginBottom: '8px' }}>
+              <div>
+                <div className="current-time">{ramadanState.target}</div>
+                <div className="time-info">
+                  ends in {formatTime(ramadanState.remaining)}
                 </div>
-              )}
-            </span>{" "}
+              </div>
+
+              <div>
+                {/* Seheri/Iftar under remaining time */}
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: '6px',
+                  fontSize: '12px',
+                  color: 'var(--secondary-text-color)',
+                  marginTop: '2px',
+                  opacity: 0.8
+                }}>
+                  <span>Seheri <span style={{ fontWeight: 600 }}>{formatPrayerTime(prayerTimes.Fajr, settings.timeFormat)}</span></span>
+                  <span>Iftar <span style={{ fontWeight: 600 }}>{formatPrayerTime(prayerTimes.Maghrib, settings.timeFormat)}</span></span>
+                </div>
+              </div>
+            </div>
+            {/* Progress Bar */}
+            <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ width: `${ramadanState.progress}%`, height: '100%', background: 'var(--primary-text-color)', borderRadius: '3px', transition: 'width 1s linear' }}></div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="time-display" style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', marginBottom: '8px' }}>
+              <div>
+                <div className="current-time">
+                  {prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
+                </div>
+                <div className="time-info">
+                  ends in {" "}
+                  <span style={{ color: forbiddenWarning ? "#c11010" : "inherit", display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                    {formatTime(remainingTime)}
+                    {forbiddenWarning && (
+                      <div className="tooltip-container" style={{ marginLeft: 0 }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span className="tooltip-text" style={{ bottom: "150%", width: "240px", marginLeft: "-120px" }}>{forbiddenWarning}</span>
+                      </div>
+                    )}
+                  </span>
+                </div>
+
+              </div>
+
+              <div>
+
+
+                {/* Sunrise/Sunset under remaining time */}
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: '6px',
+                  fontSize: '12px',
+                  color: 'var(--secondary-text-color)',
+                  marginTop: '2px',
+                  opacity: 0.8
+                }}>
+                  <span>Sunrise <span style={{ fontWeight: 600 }}>{formatPrayerTime(prayerTimes.Sunrise, settings.timeFormat)}</span></span>
+                  <span>Sunset <span style={{ fontWeight: 600 }}>{formatPrayerTime(prayerTimes.Maghrib, settings.timeFormat)}</span></span>
+                </div>
+              </div>
+            </div>
+            {/* Progress Bar */}
+            <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ width: `${prayerProgress}%`, height: '100%', background: 'var(--primary-text-color)', borderRadius: '3px', transition: 'width 1s linear' }}></div>
+            </div>
+          </div>
+        )}
         {/* <img src="/logo1.png" alt="" /> */}
       </div>
 
       <div className="date-section">
-        <div className="date-label">DATE ────────</div>
+        <div className="date-label">DATE</div>
         <div className="islamic-date">
           {hijriDate &&
             `${hijriDate.month} ${hijriDate.day}, ${hijriDate.year} ${hijriDate.abbreviated}`}
@@ -418,8 +587,37 @@ function App() {
         prayerTimes={prayerTimes}
         prayerName={prayerName == "Sunrise" ? "Salatud Doha" : prayerName}
         timeFormat={settings.timeFormat}
+        ramadanMode={settings.ramadanMode}
       />
+
+      <button
+        onClick={() => setIsProhibitedModalOpen(true)}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--secondary-text-color)',
+          fontSize: '11px',
+          cursor: 'pointer',
+          textDecoration: 'underline',
+          padding: '8px 0',
+          marginTop: '8px',
+          opacity: 0.7,
+          width: '100%',
+          textAlign: 'right'
+        }}
+        className="prohibited-times-link"
+      >
+        Prohibited Times
+      </button>
+
       <Footer />
+
+      <ProhibitedTimesModal
+        isOpen={isProhibitedModalOpen}
+        onClose={() => setIsProhibitedModalOpen(false)}
+        prayerTimes={prayerTimes}
+        settings={settings}
+      />
     </div >
   );
 }

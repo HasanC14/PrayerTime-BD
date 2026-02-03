@@ -1,15 +1,12 @@
 {
   "manifest_version": 3,
   "name": "PrayerTime",
-  "description": "Get accurate prayer times for any location worldwide with the PrayerTime Chrome extension. Now equipped with advanced calculation methods to ensure precision wherever you are, plus a new theme creator that lets you fully personalize the look and feel of your experience.",
-  "version": "2.0",
+  "description": "Accurate global prayer times with advanced calculation precision and a new personalized theme creator.",
+  "version": "3.0.0",
   "action": {
     "default_popup": "index.html",
     "default_icon": "logo512.png"
   },
-  "permissions": [
-    "offscreen"
-  ],
   "host_permissions": [
     "https://api.locationiq.com/*"
   ],
