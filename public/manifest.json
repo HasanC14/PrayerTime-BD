@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "PrayerTime",
   "description": "Accurate global prayer times with advanced calculation precision and a new personalized theme creator.",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "action": {
     "default_popup": "index.html",
     "default_icon": "logo512.png"

@@ -589,26 +589,28 @@ function App() {
         timeFormat={settings.timeFormat}
         ramadanMode={settings.ramadanMode}
       />
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <button
+          onClick={() => setIsProhibitedModalOpen(true)}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--secondary-text-color)',
+            fontSize: '11px',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            padding: '8px 0',
+            marginTop: '8px',
+            opacity: 0.7,
+            // width: '100%',
+            // textAlign: 'right'
+          }}
+          className="prohibited-times-link"
+        >
+          Prohibited Times
+        </button>
+      </div>
 
-      <button
-        onClick={() => setIsProhibitedModalOpen(true)}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          color: 'var(--secondary-text-color)',
-          fontSize: '11px',
-          cursor: 'pointer',
-          textDecoration: 'underline',
-          padding: '8px 0',
-          marginTop: '8px',
-          opacity: 0.7,
-          width: '100%',
-          textAlign: 'right'
-        }}
-        className="prohibited-times-link"
-      >
-        Prohibited Times
-      </button>
 
       <Footer />
 
